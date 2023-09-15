@@ -138,6 +138,8 @@ public class Snake : MonoBehaviour
 
         // NOTE: Viewport's edges are (0,1), (1,1), (0,0) and (1,0).
         // If the player goes beyond the screen, transform it to the opposite side.
+
+        // Wrap the player horizontally.
         if (viewportPosition.x > 1)
         {
             newPosition.x = -newPosition.x + 0.1f;
@@ -146,6 +148,8 @@ public class Snake : MonoBehaviour
         {
             newPosition.x = -newPosition.x - 0.1f;
         }
+
+        // Wrap the player vertically.
         if (viewportPosition.y > 1)
         {
             newPosition.y = -newPosition.y + 0.1f;
@@ -166,7 +170,6 @@ public class Snake : MonoBehaviour
             Quaternion targetRotation = Quaternion.LookRotation(rb.velocity, Vector3.back);
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 5f * Time.deltaTime);
         }
-
     }
 
     // When the player is crashed, deactivate it and end the game.
