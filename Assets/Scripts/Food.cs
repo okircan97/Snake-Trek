@@ -19,7 +19,7 @@ public class Food : MonoBehaviour
     }
 
     // This method is to get a random coordinate between the given bounds.
-    void RandomizePosition()
+    public void RandomizePosition()
     {
         Bounds bounds = gridArea.bounds;
         float randX = Mathf.Round(Random.Range(bounds.min.x, bounds.max.x));
@@ -29,10 +29,10 @@ public class Food : MonoBehaviour
     }
 
     // Change the food's position after the snake collides with it.
-    private void OnCollisionEnter(Collision other)
-    {
-        if (other.gameObject.GetComponent<Snake>())
-            RandomizePosition();
-    }
+    // private void OnCollisionEnter(Collision other)
+    // {
+    //     if (other.gameObject.GetComponent<Snake>())
+    //         RandomizePosition();
+    // }
 }
 

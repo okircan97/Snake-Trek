@@ -6,68 +6,31 @@ using UnityEngine.InputSystem;
 
 public class Snake : MonoBehaviour
 {
-    // float speed = 10f;
-    // List<Transform> segments;
-    // public Transform segmentPrefab;
-
-    // void Start()
-    // {
-    //     segments = new List<Transform>();
-    //     segments.Add(transform);
-    // }
-    // void FixedUpdate()
-    // {
-    //     Move();
-    // }
-
-    // // This method is to move the snake.
-    // public void Move()
-    // {
-    //     // Movement of the segments.
-    //     for (int i = segments.Count - 1; i > 0; i--)
-    //     {
-    //         segments[i].position = segments[i - 1].position;
-    //     }
-
-    //     // Regular movement.
-    //     int horizontal = Mathf.RoundToInt(Input.GetAxis("Horizontal"));
-    //     int vertical = Mathf.RoundToInt(Input.GetAxis("Vertical"));
-    //     Vector3 movementVector = new Vector3(horizontal, vertical, 0) * speed * Time.deltaTime;
-    //     transform.Translate(movementVector);
-    // }
-
-    // // This method is to grow the snake as it's eating.
-    // public void Grow()
-    // {
-    //     Transform segment = Instantiate(segmentPrefab);
-    //     segment.position = segments[segments.Count - 1].position;
-    //     segments.Add(segment);
-    // }
-
-
-    // private void OnCollisionEnter(Collision other)
-    // {
-    //     // Call the grow function on coluusion with a food.
-    //     if (other.gameObject.GetComponent<Food>())
-    //         Grow();
-    //     // Restart the game on collusion with a wall or a segment.
-    //     if (other.gameObject.tag == "Wall")
-    //         SceneManager.LoadScene(0);
-    // }
-
     // ////////////////////////////////////////
     // //////////////// FIELDS ////////////////
     // ////////////////////////////////////////
 
+    // Fields for the snake segments.
+    List<Transform> segments;
+    public Transform segmentPrefab;
+    bool hasGrownThisFrame = false;
+    bool isOutsideViewport = false;
+    Vector3 outOfViewportPos;
+
+    // Fields for the snake movement.
     [SerializeField] float forceMagnitude;
     [SerializeField] float maxVelocity;
-    Camera mainCamera;
-    Rigidbody rb;
     Vector3 movementDirection;
 
+    // References.
+    Camera mainCamera;
+    Rigidbody rb;
+
+    // Fields for testing purposes.
+    int foodEaten = 0;
 
     // ////////////////////////////////////////
-    // //////////// START & UPDATE ////////////
+    // //////////// MONO-BEHAVIORS ////////////
     // ////////////////////////////////////////
 
     void Start()
@@ -75,6 +38,9 @@ public class Snake : MonoBehaviour
         // Initilazing the fields.
         mainCamera = Camera.main;
         rb = GetComponent<Rigidbody>();
+
+        segments = new List<Transform>();
+        segments.Add(transform);
     }
 
     void Update()
@@ -89,6 +55,23 @@ public class Snake : MonoBehaviour
         ApplyForce();
     }
 
+    void LateUpdate()
+    {
+        hasGrownThisFrame = false;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        // If the snake did not grow at this frame:
+        if (!hasGrownThisFrame && other.gameObject.GetComponent<Food>())
+        {
+            // Change the food position and grow the snake. Set the
+            // flag to true.
+            other.gameObject.GetComponent<Food>().RandomizePosition();
+            Grow();
+            hasGrownThisFrame = true;
+        }
+    }
 
     // ////////////////////////////////////////
     // /////////////// METHODS ////////////////
@@ -104,29 +87,57 @@ public class Snake : MonoBehaviour
             Vector2 touchPosition = Touchscreen.current.primaryTouch.position.ReadValue();
             Vector3 worldPosition = mainCamera.ScreenToWorldPoint(touchPosition);
 
-            // The player will move against the clicked pos.
+            // The player will move towards the clicked pos.
             movementDirection = worldPosition - transform.position;
             movementDirection.z = 0f;
 
             // When normalized, the force won't be changed overtime.
             movementDirection.Normalize();
         }
-
-        else
-        {
-            // If not clicked, the force will be zero.
-            movementDirection = Vector3.zero;
-        }
     }
 
     // This method is to apply force to the player, according to the movement dir.
     void ApplyForce()
     {
+        // Movement of the segments.
+
+        // If the snake is not outside the viewport, lerp the segments from
+        // the snake head pos.
+        if (!isOutsideViewport)
+        {
+            for (int i = segments.Count - 1; i > 0; i--)
+            {
+                segments[i].position = Vector3.Lerp(segments[i].position, segments[i - 1].position, 10f * Time.deltaTime);
+            }
+
+        }
+        // If the snake is outside the the viewport, lerp the segments from
+        // the outOfViewportPos.
+        else
+        {
+            for (int i = segments.Count - 1; i > 0; i--)
+            {
+                segments[i].position = segments[i - 1].position;
+            }
+        }
+
+
+        // Movement of the head.
         if (movementDirection != Vector3.zero)
         {
             rb.AddForce(movementDirection * forceMagnitude, ForceMode.Force);
             rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxVelocity);
         }
+    }
+
+    // This method is to grow the snake as it's eating.
+    public void Grow()
+    {
+        // segments[segments.Count-1].transform.position.x
+        Vector3 segmentPos = segments[segments.Count - 1].position - movementDirection;
+        Transform segment = Instantiate(segmentPrefab, segmentPos, Quaternion.identity);
+        // segment.position = segments[segments.Count - 1].position;
+        segments.Add(segment);
     }
 
     // This method is to keep the player on screen.
@@ -136,27 +147,37 @@ public class Snake : MonoBehaviour
         Vector3 newPosition = transform.position;
         Vector3 viewportPosition = mainCamera.WorldToViewportPoint(transform.position);
 
+        // Set the isOutsideViewport flag when the snake head goes outside the viewport.
+        if (viewportPosition.x > 1 || viewportPosition.x < 0 || viewportPosition.y > 1 || viewportPosition.y < 0)
+        {
+            isOutsideViewport = true;
+            StartCoroutine(WaitFlagChanger());
+        }
+
         // NOTE: Viewport's edges are (0,1), (1,1), (0,0) and (1,0).
         // If the player goes beyond the screen, transform it to the opposite side.
-
         // Wrap the player horizontally.
         if (viewportPosition.x > 1)
         {
             newPosition.x = -newPosition.x + 0.1f;
+            outOfViewportPos = transform.position;
         }
         if (viewportPosition.x < 0)
         {
             newPosition.x = -newPosition.x - 0.1f;
+            outOfViewportPos = transform.position;
         }
 
         // Wrap the player vertically.
         if (viewportPosition.y > 1)
         {
             newPosition.y = -newPosition.y + 0.1f;
+            outOfViewportPos = transform.position;
         }
         if (viewportPosition.y < 0)
         {
             newPosition.y = -newPosition.y - 0.1f;
+            outOfViewportPos = transform.position;
         }
 
         transform.position = newPosition;
@@ -177,6 +198,21 @@ public class Snake : MonoBehaviour
     {
         gameObject.SetActive(false);
         // sceneHandler.EndGame();
+    }
+
+    // A coroutine to wait and change the isOutsideViewport.
+    IEnumerator WaitFlagChanger()
+    {
+        yield return new WaitForSeconds(segments.Count * 0.1f);
+        isOutsideViewportChanger();
+    }
+
+    // This method is to change the isOutsideViewport.
+    public bool isOutsideViewportChanger()
+    {
+        Debug.Log("Ahanda flag'i degistirdim");
+        isOutsideViewport = false;
+        return isOutsideViewport;
     }
 }
 
