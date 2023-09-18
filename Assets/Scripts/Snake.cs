@@ -47,7 +47,7 @@ public class Snake : MonoBehaviour
     {
         ProcessInput();
         KeepPlayerOnScreen();
-        RotateTheFaceVelocity();
+        RotateToFaceVelocity();
     }
 
     void FixedUpdate()
@@ -73,6 +73,7 @@ public class Snake : MonoBehaviour
         }
     }
 
+
     // ////////////////////////////////////////
     // /////////////// METHODS ////////////////
     // ////////////////////////////////////////
@@ -93,34 +94,48 @@ public class Snake : MonoBehaviour
 
             // When normalized, the force won't be changed overtime.
             movementDirection.Normalize();
+
+            // // TO DO
+            // float angle = Mathf.Atan2(movementDirection.y, movementDirection.x) * Mathf.Rad2Deg;
+
+            // // Create a rotation based on the calculated angle
+            // Quaternion targetRotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
+
+            // // Smoothly interpolate the current rotation to the target rotation
+            // transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
         }
     }
 
     // This method is to apply force to the player, according to the movement dir.
     void ApplyForce()
     {
+        // // Movement of the segments.
+
+        // // If the snake is not outside the viewport, lerp the segments from
+        // // the snake head pos.
+        // if (!isOutsideViewport)
+        // {
+        //     for (int i = segments.Count - 1; i > 0; i--)
+        //     {
+        //         segments[i].position = Vector3.Lerp(segments[i].position, segments[i - 1].position, 10f * Time.deltaTime);
+        //     }
+
+        // }
+        // // If the snake is outside the the viewport, lerp the segments from
+        // // the outOfViewportPos.
+        // else
+        // {
+        //     for (int i = segments.Count - 1; i > 0; i--)
+        //     {
+        //         segments[i].position = segments[i - 1].position - movementDirection;
+        //     }
+        // }
+
         // Movement of the segments.
-
-        // If the snake is not outside the viewport, lerp the segments from
-        // the snake head pos.
-        if (!isOutsideViewport)
+        for (int i = segments.Count - 1; i > 0; i--)
         {
-            for (int i = segments.Count - 1; i > 0; i--)
-            {
-                segments[i].position = Vector3.Lerp(segments[i].position, segments[i - 1].position, 10f * Time.deltaTime);
-            }
-
+            segments[i].position = segments[i - 1].position;
         }
-        // If the snake is outside the the viewport, lerp the segments from
-        // the outOfViewportPos.
-        else
-        {
-            for (int i = segments.Count - 1; i > 0; i--)
-            {
-                segments[i].position = segments[i - 1].position;
-            }
-        }
-
 
         // Movement of the head.
         if (movementDirection != Vector3.zero)
@@ -183,14 +198,16 @@ public class Snake : MonoBehaviour
         transform.position = newPosition;
     }
 
-    // This method is to rotate the player to face to the velocity.
-    void RotateTheFaceVelocity()
+    // This method is to rotate the snake and its segments to face to the velocity.
+    void RotateToFaceVelocity()
     {
-        if (rb.velocity != Vector3.zero)
+        Quaternion targetRotation = Quaternion.LookRotation(rb.velocity, Vector3.forward);
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 10f * Time.deltaTime);
+
+        for (int i = 0; i < segments.Count; i++)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(rb.velocity, Vector3.back);
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 5f * Time.deltaTime);
-        }
+            segments[i].transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 10f * Time.deltaTime);
+        };
     }
 
     // When the player is crashed, deactivate it and end the game.
@@ -203,7 +220,7 @@ public class Snake : MonoBehaviour
     // A coroutine to wait and change the isOutsideViewport.
     IEnumerator WaitFlagChanger()
     {
-        yield return new WaitForSeconds(segments.Count * 0.1f);
+        yield return new WaitForSeconds(0.2f);
         isOutsideViewportChanger();
     }
 
