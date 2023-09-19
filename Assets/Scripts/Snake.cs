@@ -25,6 +25,8 @@ public class Snake : MonoBehaviour
     // References.
     Camera mainCamera;
     Rigidbody rb;
+    SceneHandler sceneHandler;
+
 
     // Fields for testing purposes.
     int foodEaten = 0;
@@ -38,9 +40,17 @@ public class Snake : MonoBehaviour
         // Initilazing the fields.
         mainCamera = Camera.main;
         rb = GetComponent<Rigidbody>();
+        sceneHandler = FindObjectOfType<SceneHandler>();
 
         segments = new List<Transform>();
         segments.Add(transform);
+
+        // Vector3 particle1Pos = new Vector3(transform.position.x + 0.3f, transform.position.y, transform.position.z);
+        // Vector3 particle2Pos = new Vector3(transform.position.x - 0.3f, transform.position.y, transform.position.z);
+        // GameObject particle1 = Instantiate(particle, particle1Pos, Quaternion.identity);
+        // GameObject particle2 = Instantiate(particle, particle2Pos, Quaternion.identity);
+        // particle1.transform.SetParent(transform);
+        // particle2.transform.SetParent(transform);
     }
 
     void Update()
@@ -71,6 +81,9 @@ public class Snake : MonoBehaviour
             Grow();
             hasGrownThisFrame = true;
         }
+
+        if (other.gameObject.GetComponent<Asteroid>())
+            Crash();
     }
 
 
@@ -134,6 +147,12 @@ public class Snake : MonoBehaviour
         // Movement of the segments.
         for (int i = segments.Count - 1; i > 0; i--)
         {
+            // if (i == 1)
+            // {
+            //     segments[i].position = Vector3.Lerp(segments[i].position, segments[i - 1].position, 10f * Time.deltaTime);
+            //     // segments[i].position = segments[i - 1].position - movementDirection;
+            // }
+            // else
             segments[i].position = segments[i - 1].position;
         }
 
@@ -163,11 +182,11 @@ public class Snake : MonoBehaviour
         Vector3 viewportPosition = mainCamera.WorldToViewportPoint(transform.position);
 
         // Set the isOutsideViewport flag when the snake head goes outside the viewport.
-        if (viewportPosition.x > 1 || viewportPosition.x < 0 || viewportPosition.y > 1 || viewportPosition.y < 0)
-        {
-            isOutsideViewport = true;
-            StartCoroutine(WaitFlagChanger());
-        }
+        // if (viewportPosition.x > 1 || viewportPosition.x < 0 || viewportPosition.y > 1 || viewportPosition.y < 0)
+        // {
+        //     isOutsideViewport = true;
+        //     StartCoroutine(WaitFlagChanger());
+        // }
 
         // NOTE: Viewport's edges are (0,1), (1,1), (0,0) and (1,0).
         // If the player goes beyond the screen, transform it to the opposite side.
@@ -214,22 +233,26 @@ public class Snake : MonoBehaviour
     public void Crash()
     {
         gameObject.SetActive(false);
-        // sceneHandler.EndGame();
+        Invoke("LoadMainMenu", 2f);
     }
 
-    // A coroutine to wait and change the isOutsideViewport.
-    IEnumerator WaitFlagChanger()
+    public void LoadMainMenu()
     {
-        yield return new WaitForSeconds(0.2f);
-        isOutsideViewportChanger();
+        sceneHandler.LoadMainMenu();
     }
 
-    // This method is to change the isOutsideViewport.
-    public bool isOutsideViewportChanger()
-    {
-        Debug.Log("Ahanda flag'i degistirdim");
-        isOutsideViewport = false;
-        return isOutsideViewport;
-    }
+    // // A coroutine to wait and change the isOutsideViewport.
+    // IEnumerator WaitFlagChanger()
+    // {
+    //     yield return new WaitForSeconds(0.2f);
+    //     isOutsideViewportChanger();
+    // }
+
+    // // This method is to change the isOutsideViewport.
+    // public bool isOutsideViewportChanger()
+    // {
+    //     isOutsideViewport = false;
+    //     return isOutsideViewport;
+    // }
 }
 

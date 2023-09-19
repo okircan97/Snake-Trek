@@ -14,11 +14,6 @@ public class NebulaHandler : MonoBehaviour
         HandleNebula();
     }
 
-    void Update()
-    {
-
-    }
-
     // This method is to change the nebula sprite according
     //  to the nebula key inside the player prefs.
     public void HandleNebula()

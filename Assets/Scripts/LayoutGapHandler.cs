@@ -36,7 +36,7 @@ public class LayoutGapHandler : MonoBehaviour
         spacing = hlg.spacing;
 
         // Two and almost half of a button is visible.
-        visibleElementNum = 2.4f;
+        // visibleElementNum = 2.4f;
     }
 
     private void Update()
