@@ -5,11 +5,11 @@ using UnityEngine;
 public class NebulaHandler : MonoBehaviour
 {
     SpriteRenderer spriteRenderer;
-    MenuHandler menuHandler;
+    MainMenuHandler menuHandler;
 
     void Start()
     {
-        menuHandler = FindObjectOfType<MenuHandler>();
+        menuHandler = FindObjectOfType<MainMenuHandler>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         HandleNebula();
     }

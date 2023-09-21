@@ -6,7 +6,6 @@ public class ObjSpinner : MonoBehaviour
 {
     void Update()
     {
-
-        transform.Rotate(Vector3.up * (20 * Time.deltaTime));
+        transform.Rotate(Vector3.up * (Random.Range(5, 30) * Time.deltaTime));
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
+using TMPro;
 
 public class Snake : MonoBehaviour
 {
@@ -13,23 +14,31 @@ public class Snake : MonoBehaviour
     // Fields for the snake segments.
     List<Transform> segments;
     public Transform segmentPrefab;
-    bool hasGrownThisFrame = false;
-    bool isOutsideViewport = false;
+    bool hasGrownThisFrame = false, hasCrashThisFrame = false;
     Vector3 outOfViewportPos;
+    [SerializeField] GameObject tracker;
 
-    // Fields for the snake movement.
+    // Fields for the s.n.a.k.e ship.
     [SerializeField] float forceMagnitude;
-    [SerializeField] float maxVelocity;
+    public float maxVelocity;
     Vector3 movementDirection;
+    public float shield;
 
     // References.
     Camera mainCamera;
     Rigidbody rb;
     SceneHandler sceneHandler;
+    [SerializeField] TMP_Text shieldText;
+    [SerializeField] GameObject explosion;
+    PauseMenuHandler pauseMenuHandler;
 
 
-    // Fields for testing purposes.
+    // Fields for mineral, credits and time track.
+    float score = 0;
+    int credits = 0;
     int foodEaten = 0;
+    int asteroidsDestroyed = 0;
+
 
     // ////////////////////////////////////////
     // //////////// MONO-BEHAVIORS ////////////
@@ -41,20 +50,20 @@ public class Snake : MonoBehaviour
         mainCamera = Camera.main;
         rb = GetComponent<Rigidbody>();
         sceneHandler = FindObjectOfType<SceneHandler>();
+        pauseMenuHandler = FindObjectOfType<PauseMenuHandler>();
 
+        // Add the head as the first segment.
         segments = new List<Transform>();
         segments.Add(transform);
 
-        // Vector3 particle1Pos = new Vector3(transform.position.x + 0.3f, transform.position.y, transform.position.z);
-        // Vector3 particle2Pos = new Vector3(transform.position.x - 0.3f, transform.position.y, transform.position.z);
-        // GameObject particle1 = Instantiate(particle, particle1Pos, Quaternion.identity);
-        // GameObject particle2 = Instantiate(particle, particle2Pos, Quaternion.identity);
-        // particle1.transform.SetParent(transform);
-        // particle2.transform.SetParent(transform);
+        // Handle the text fields.
+        shieldText.text = "Shield: " + shield.ToString();
+
     }
 
     void Update()
     {
+        // Handle the movement inputs.
         ProcessInput();
         KeepPlayerOnScreen();
         RotateToFaceVelocity();
@@ -62,28 +71,44 @@ public class Snake : MonoBehaviour
 
     void FixedUpdate()
     {
+        // Handle the movement of the head and the segments.
         ApplyForce();
     }
 
     void LateUpdate()
     {
+        // Changing the flags on late update, so that OnTriggerEnter()
+        // won't get triggered multiple times. 
         hasGrownThisFrame = false;
+        hasCrashThisFrame = false;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        // If the snake did not grow at this frame:
+        // If the "other" is food, grow.
         if (!hasGrownThisFrame && other.gameObject.GetComponent<Food>())
         {
-            // Change the food position and grow the snake. Set the
-            // flag to true.
             other.gameObject.GetComponent<Food>().RandomizePosition();
             Grow();
             hasGrownThisFrame = true;
         }
 
-        if (other.gameObject.GetComponent<Asteroid>())
-            Crash();
+        // If the "other" is asteroid take damage and destroy if no shield remains.
+        if (!hasCrashThisFrame && other.gameObject.GetComponent<Asteroid>())
+        {
+            other.gameObject.GetComponent<Asteroid>().Explode();
+            shield -= 10;
+            shieldText.text = "Shield: " + shield.ToString();
+            hasCrashThisFrame = true;
+            if (shield <= 0)
+                GameOver();
+        }
+
+        // If the other is "segment", game over.
+        if (other.transform.gameObject.tag == "Segment")
+        {
+            GameOver();
+        }
     }
 
 
@@ -107,59 +132,31 @@ public class Snake : MonoBehaviour
 
             // When normalized, the force won't be changed overtime.
             movementDirection.Normalize();
-
-            // // TO DO
-            // float angle = Mathf.Atan2(movementDirection.y, movementDirection.x) * Mathf.Rad2Deg;
-
-            // // Create a rotation based on the calculated angle
-            // Quaternion targetRotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
-
-            // // Smoothly interpolate the current rotation to the target rotation
-            // transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
         }
     }
 
     // This method is to apply force to the player, according to the movement dir.
     void ApplyForce()
     {
-        // // Movement of the segments.
-
-        // // If the snake is not outside the viewport, lerp the segments from
-        // // the snake head pos.
-        // if (!isOutsideViewport)
-        // {
-        //     for (int i = segments.Count - 1; i > 0; i--)
-        //     {
-        //         segments[i].position = Vector3.Lerp(segments[i].position, segments[i - 1].position, 10f * Time.deltaTime);
-        //     }
-
-        // }
-        // // If the snake is outside the the viewport, lerp the segments from
-        // // the outOfViewportPos.
-        // else
-        // {
-        //     for (int i = segments.Count - 1; i > 0; i--)
-        //     {
-        //         segments[i].position = segments[i - 1].position - movementDirection;
-        //     }
-        // }
 
         // Movement of the segments.
         for (int i = segments.Count - 1; i > 0; i--)
         {
-            // if (i == 1)
-            // {
-            //     segments[i].position = Vector3.Lerp(segments[i].position, segments[i - 1].position, 10f * Time.deltaTime);
-            //     // segments[i].position = segments[i - 1].position - movementDirection;
-            // }
-            // else
-            segments[i].position = segments[i - 1].position;
+            if (i == 1)
+            {
+                segments[i].position = tracker.transform.position;
+            }
+            else
+            {
+                segments[i].position = segments[i - 1].position;
+            }
+
         }
 
         // Movement of the head.
         if (movementDirection != Vector3.zero)
         {
-            rb.AddForce(movementDirection * forceMagnitude, ForceMode.Force);
+            rb.AddForce(movementDirection * forceMagnitude, ForceMode.Impulse);
             rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxVelocity);
         }
     }
@@ -167,10 +164,8 @@ public class Snake : MonoBehaviour
     // This method is to grow the snake as it's eating.
     public void Grow()
     {
-        // segments[segments.Count-1].transform.position.x
         Vector3 segmentPos = segments[segments.Count - 1].position - movementDirection;
         Transform segment = Instantiate(segmentPrefab, segmentPos, Quaternion.identity);
-        // segment.position = segments[segments.Count - 1].position;
         segments.Add(segment);
     }
 
@@ -181,37 +176,26 @@ public class Snake : MonoBehaviour
         Vector3 newPosition = transform.position;
         Vector3 viewportPosition = mainCamera.WorldToViewportPoint(transform.position);
 
-        // Set the isOutsideViewport flag when the snake head goes outside the viewport.
-        // if (viewportPosition.x > 1 || viewportPosition.x < 0 || viewportPosition.y > 1 || viewportPosition.y < 0)
-        // {
-        //     isOutsideViewport = true;
-        //     StartCoroutine(WaitFlagChanger());
-        // }
-
         // NOTE: Viewport's edges are (0,1), (1,1), (0,0) and (1,0).
         // If the player goes beyond the screen, transform it to the opposite side.
         // Wrap the player horizontally.
-        if (viewportPosition.x > 1)
+        if (viewportPosition.x > 1.1f)
         {
             newPosition.x = -newPosition.x + 0.1f;
-            outOfViewportPos = transform.position;
         }
-        if (viewportPosition.x < 0)
+        if (viewportPosition.x < -0.1f)
         {
             newPosition.x = -newPosition.x - 0.1f;
-            outOfViewportPos = transform.position;
         }
 
         // Wrap the player vertically.
-        if (viewportPosition.y > 1)
+        if (viewportPosition.y > 1.1f)
         {
             newPosition.y = -newPosition.y + 0.1f;
-            outOfViewportPos = transform.position;
         }
-        if (viewportPosition.y < 0)
+        if (viewportPosition.y < -0.1f)
         {
             newPosition.y = -newPosition.y - 0.1f;
-            outOfViewportPos = transform.position;
         }
 
         transform.position = newPosition;
@@ -222,37 +206,38 @@ public class Snake : MonoBehaviour
     {
         Quaternion targetRotation = Quaternion.LookRotation(rb.velocity, Vector3.forward);
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 10f * Time.deltaTime);
-
-        for (int i = 0; i < segments.Count; i++)
-        {
-            segments[i].transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 10f * Time.deltaTime);
-        };
     }
 
-    // When the player is crashed, deactivate it and end the game.
-    public void Crash()
+    // When the player is crashed, deactivate the snake, destroy the segments and 
+    // play the explosion effect.
+    public void GameOver()
     {
         gameObject.SetActive(false);
-        Invoke("LoadMainMenu", 2f);
+
+        // Explosion obj. has three particle effects as children.
+        explosion = Instantiate(explosion, transform.position, Quaternion.identity);
+        for (int i = 0; i < explosion.transform.childCount; i++)
+        {
+            explosion.transform.GetChild(i).GetComponent<ParticleSystem>().Play();
+        }
+
+        DestroySegments();
+        Invoke("LoadPauseMenu", 3f);
     }
 
-    public void LoadMainMenu()
+    // This method is to destroy the segments.
+    void DestroySegments()
     {
-        sceneHandler.LoadMainMenu();
+        for (int i = 1; i < segments.Count; i++)
+        {
+            Destroy(segments[i].transform.gameObject);
+        }
     }
 
-    // // A coroutine to wait and change the isOutsideViewport.
-    // IEnumerator WaitFlagChanger()
-    // {
-    //     yield return new WaitForSeconds(0.2f);
-    //     isOutsideViewportChanger();
-    // }
-
-    // // This method is to change the isOutsideViewport.
-    // public bool isOutsideViewportChanger()
-    // {
-    //     isOutsideViewport = false;
-    //     return isOutsideViewport;
-    // }
+    // This method is to show the pause menu on game over.
+    public void LoadPauseMenu()
+    {
+        pauseMenuHandler.ResumePauseGame();
+    }
 }
 

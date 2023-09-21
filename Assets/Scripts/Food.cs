@@ -4,11 +4,17 @@ using UnityEngine;
 
 public class Food : MonoBehaviour
 {
-    public BoxCollider gridArea;
+    // ////////////////////////////////////////
+    // //////////////// FIELDS ////////////////
+    // ////////////////////////////////////////
 
-    // public GameObject[] junks;
+    public BoxCollider gridArea;
     Vector3 rotationVector;
 
+
+    // ////////////////////////////////////////
+    // //////////// MONO-BEHAVIORS ////////////
+    // ////////////////////////////////////////
 
     void Start()
     {
@@ -30,23 +36,12 @@ public class Food : MonoBehaviour
         transform.position = new Vector3(randX, randY, -10);
         transform.rotation = Quaternion.Euler(0, 0, 0);
         rotationVector = GetRandVector3();
-        // SpawnJunk();
     }
 
-    // This method is to spawn junk.
-    // void SpawnJunk()
-    // {
-    //     // If there's a previously created junk, destroy it.
-    //     if (transform.childCount != 0)
-    //         Destroy(transform.GetChild(0).gameObject);
 
-    //     // Spawn a new random junk.
-    //     int rand = Random.Range(0, junks.Length);
-    //     GameObject junk = Instantiate(junks[rand], transform.position, Quaternion.identity);
-    //     junk.transform.localScale = new Vector3(0.05f, 0.05f, 0.1f);
-    //     junk.transform.SetParent(transform);
-    //     rotationVector = GetRandVector3();
-    // }
+    // ////////////////////////////////////////
+    // /////////////// METHODS ////////////////
+    // ////////////////////////////////////////
 
     // This method is to return a random Vector3.
     Vector3 GetRandVector3()

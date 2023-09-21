@@ -38,4 +38,10 @@ public class SceneHandler : MonoBehaviour
     {
         SceneManager.LoadScene(0);
     }
+
+    // This method is to load the game.
+    public void LoadGame()
+    {
+        SceneManager.LoadScene(1);
+    }
 }
