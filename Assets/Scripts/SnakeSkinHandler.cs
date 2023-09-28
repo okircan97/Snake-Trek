@@ -6,10 +6,10 @@ using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
 using TMPro;
 
+// This class is to handle the ship skin.
 public class SnakeSkinHandler : MonoBehaviour
 {
     SpriteRenderer spriteRenderer;
-    MainMenuHandler menuHandler;
 
     // Price, shield, and speed
     float[,] snakeProperties = {{0,30,5},{1000,30,5},{1000,30,5.1f},{1500,40,5.2f},{1500,40,5.3f},
@@ -24,7 +24,6 @@ public class SnakeSkinHandler : MonoBehaviour
 
     void Start()
     {
-        menuHandler = FindObjectOfType<MainMenuHandler>();
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
@@ -63,13 +62,6 @@ public class SnakeSkinHandler : MonoBehaviour
                     transform.GetComponent<Snake>().shield = snakeProperties[i, 1];
                     transform.GetComponent<Snake>().maxVelocity = snakeProperties[i, 2];
                 }
-
-                // Change the snake segment's material with the model's material.
-                // if (transform.GetComponent<Snake>())
-                // {
-                //     transform.GetComponent<Snake>().segmentPrefab.GetComponent<Renderer>().material =
-                //     transform.GetChild(i).gameObject.GetComponent<Renderer>().material;
-                // }
 
                 // Each model has a child with multiple childs containing colliders.
                 int colliderNum = transform.GetChild(i).gameObject.transform.GetChild(0).childCount;

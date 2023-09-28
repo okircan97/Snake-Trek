@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// This class is to handle the nebula background.
 public class NebulaHandler : MonoBehaviour
 {
     SpriteRenderer spriteRenderer;
@@ -15,7 +16,7 @@ public class NebulaHandler : MonoBehaviour
     }
 
     // This method is to change the nebula sprite according
-    //  to the nebula key inside the player prefs.
+    // to the nebula key inside the player prefs.
     public void HandleNebula()
     {
         int nebulaKey = PlayerPrefs.GetInt("Nebula", 0);

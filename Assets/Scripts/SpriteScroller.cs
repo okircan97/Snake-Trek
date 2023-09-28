@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// This class is to handle the parallax background.
 public class SpriteScroller : MonoBehaviour
 {
     // ////////////////////////////////////////
@@ -16,7 +17,6 @@ public class SpriteScroller : MonoBehaviour
     // ////////////////////////////////////////
     // //////////// MONO BEHAVIORS ////////////
     // ////////////////////////////////////////
-
 
     void Awake()
     {
