@@ -19,7 +19,7 @@ public class Snake : MonoBehaviour
     Vector3 movementDirection;
     public float shield;
     [SerializeField] TMP_Text shieldText;
-    bool isStarted;     // A bool to check if the game is started.
+    public bool isStarted;     // A bool to check if the game is started.
 
     // Fields for the snake segments.
     List<Transform> segments;
@@ -283,7 +283,7 @@ public class Snake : MonoBehaviour
     // This method is to grow the snake as it's eating.
     public void Grow()
     {
-        Transform segment = Instantiate(segmentPrefab);
+        Transform segment = Instantiate(segmentPrefab, segments[segments.Count - 1].position, Quaternion.identity);
         if (!isGrowBefore)
         {
             segment.tag = "Untagged";
