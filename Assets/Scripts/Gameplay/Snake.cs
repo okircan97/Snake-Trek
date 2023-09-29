@@ -18,6 +18,7 @@ public class Snake : MonoBehaviour
     public float maxVelocity;
     Vector3 movementDirection;
     public float shield;
+    [SerializeField] TMP_Text shieldText;
 
     // Fields for the snake segments.
     List<Transform> segments;
@@ -27,32 +28,38 @@ public class Snake : MonoBehaviour
     GameObject playerSegments;            // This obj. will hold all the snake segments belong to the player.
 
     // Fields for segment movement.
-    List<Vector3> positionHistory = new List<Vector3>();
-    public int gap = 5;
-    bool isGrowBefore = false;
-
-    // References.
-    Camera mainCamera;
-    Rigidbody rb;
-    SceneHandler sceneHandler;
-    [SerializeField] TMP_Text shieldText;
-    [SerializeField] GameObject explosion;
-    PauseMenuHandler pauseMenuHandler;
-    Animator animator;
-    AsteroidSpawner asteroidSpawner;
-    [SerializeField] GameObject gameOverMenu;
-    TextHandler textHandler;
-    AudioSource audioSource;
-    public AudioClip explodeClip;
-    public AudioClip asteroidExpClip;
-    [SerializeField] AudioSource audioHandler;
-    CameraShake cameraShake;
+    List<Vector3> positionHistory = new List<Vector3>();    // A list to hold the transform pos. history.
+    public int gap = 5;                                     // For 
+    bool isGrowBefore = false;                              // A bool to get the first segment.
 
     // Fields for calculating the score.
     public int asteroidsDestroyed;
     public int enemiesDestroyed;
     public int draoclineCollected;
     public float score;
+
+    // References.
+    Camera mainCamera;
+    Rigidbody rb;
+    SceneHandler sceneHandler;
+    PauseMenuHandler pauseMenuHandler;
+    Animator animator;
+    TypeText typeText;
+    AsteroidSpawner asteroidSpawner;
+
+
+
+    [SerializeField] GameObject explosion;
+    [SerializeField] GameObject gameOverMenu;
+
+    CameraShake cameraShake;
+
+    // Audio stuff.
+    public AudioClip explodeClip;
+    public AudioClip asteroidExpClip;
+    AudioSource audioSource;
+
+
 
     #endregion
 
@@ -71,11 +78,9 @@ public class Snake : MonoBehaviour
         pauseMenuHandler = FindObjectOfType<PauseMenuHandler>();
         asteroidSpawner = FindObjectOfType<AsteroidSpawner>();
         playerSegments = GameObject.FindWithTag("PlayerSegments");
-        textHandler = FindObjectOfType<TextHandler>();
+        typeText = FindObjectOfType<TypeText>();
         cameraShake = FindObjectOfType<CameraShake>();
-
-        audioSource = gameObject.AddComponent<AudioSource>();
-        audioSource.clip = explodeClip;
+        audioSource = GameObject.FindWithTag("AudioHandler").transform.GetComponent<AudioSource>();
 
         // Add the head as the first segment.
         segments = new List<Transform>();
@@ -118,50 +123,54 @@ public class Snake : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Food food = other.gameObject.GetComponent<Food>();
+        Asteroid asteroid = other.gameObject.GetComponent<Asteroid>();
+        Laser laser = other.gameObject.GetComponent<Laser>();
+        Enemy enemy = other.gameObject.GetComponent<Enemy>();
+
         // If the "other" is food, grow.
-        if (!hasGrownThisFrame && other.gameObject.GetComponent<Food>())
+        if (!hasGrownThisFrame && food)
         {
-            other.gameObject.GetComponent<Food>().RandomizePosition();
+            food.RandomizePosition();
             draoclineCollected++;
             Grow();
             hasGrownThisFrame = true;
         }
 
         // If the "other" is asteroid take damage and destroy if no shield remains.
-        if (!hasCrashThisFrame && other.gameObject.GetComponent<Asteroid>())
+        else if (!hasCrashThisFrame && asteroid)
         {
             PlayAudioClip(asteroidExpClip);
             cameraShake.ShakeCamera();
-            // other.gameObject.GetComponent<Asteroid>().audioSource.Play();
-            other.gameObject.GetComponent<Asteroid>().Explode();
+            asteroid.Explode();
             shield -= 10;
             shieldText.text = "Shield: " + shield.ToString();
             hasCrashThisFrame = true;
             if (shield <= 0)
             {
-                // audioSource.Play();
                 GameOver();
             }
         }
 
         // If the "other" is laser take damage and destroy if no shield remains.
-        if (!hasCrashThisFrame && other.gameObject.GetComponent<Laser>())
+        else if (!hasCrashThisFrame && laser)
         {
             cameraShake.ShakeCamera();
             shield -= 10;
+            Destroy(laser.gameObject);
             shieldText.text = "Shield: " + shield.ToString();
             hasCrashThisFrame = true;
             if (shield <= 0)
             {
-                // audioSource.Play();
                 GameOver();
             }
         }
 
         // If the other is "segment" or an "enemy", game over.
-        if (other.transform.gameObject.tag == "Segment" || other.gameObject.GetComponent<Enemy>() || other.gameObject.GetComponent<Laser>())
+        else if (other.transform.gameObject.tag == "Segment" || enemy)
         {
-            audioSource.Play();
+            cameraShake.ShakeCamera();
+            PlayAudioClip(explodeClip);
             GameOver();
         }
     }
@@ -173,6 +182,8 @@ public class Snake : MonoBehaviour
     // /////////////// METHODS ////////////////
     // ////////////////////////////////////////
     #region  METHODS
+
+    #region  MOVEMENT METHODS
 
     // This method is to process the input.
     void ProcessInput()
@@ -218,20 +229,6 @@ public class Snake : MonoBehaviour
 
     }
 
-    // This method is to grow the snake as it's eating.
-    public void Grow()
-    {
-        Transform segment = Instantiate(segmentPrefab);
-        if (!isGrowBefore)
-        {
-            segment.tag = "Untagged";
-            isGrowBefore = true;
-        }
-
-        segment.SetParent(playerSegments.transform);
-        segments.Add(segment);
-    }
-
     // This method is to keep the player on screen.
     void KeepPlayerOnScreen()
     {
@@ -241,6 +238,7 @@ public class Snake : MonoBehaviour
 
         // NOTE: Viewport's edges are (0,1), (1,1), (0,0) and (1,0).
         // If the player goes beyond the screen, transform it to the opposite side.
+
         // Wrap the player horizontally.
         if (viewportPosition.x > 1.1f)
         {
@@ -276,31 +274,32 @@ public class Snake : MonoBehaviour
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 10f * Time.deltaTime);
     }
 
-    // This method is to show the pause menu on game over.
-    public void LoadGameOverMenu()
+    # endregion
+
+    // This method is to grow the snake as it's eating.
+    public void Grow()
     {
-        gameOverMenu.SetActive(true);
-        textHandler.CallTypeText();
+        Transform segment = Instantiate(segmentPrefab);
+        if (!isGrowBefore)
+        {
+            segment.tag = "Untagged";
+            isGrowBefore = true;
+        }
+
+        segment.SetParent(playerSegments.transform);
+        segments.Add(segment);
     }
+
+    #region  GAMEOVER METHODS
 
     // When the player is crashed, deactivate the snake, destroy the segments and 
     // play the explosion effect.
     public void GameOver()
     {
-        // Store the draocline found, enemy destroyed and asteroid destroyed values
-        // inside the player prefs.
         SetPlayerPrefs();
-
-        // Calculate the score and the credits and set them at player prefs.
-        // SetPlayerPrefs(CalculateScoreAndCredits());
         CalculateScoreAndCredits();
-
-        // Destroy the segments.
         DestroySegments();
-
         PlayAudioClip(explodeClip);
-
-        // Deactivate the snake.
         gameObject.SetActive(false);
 
         // Play the explosion effect (Explosion obj. has three particle effects as children)
@@ -310,17 +309,15 @@ public class Snake : MonoBehaviour
             explosion.transform.GetChild(i).GetComponent<ParticleSystem>().Play();
         }
 
-        // Load the game over menu.
         Invoke("LoadGameOverMenu", 2f);
     }
 
-    // This method is to destroy the segments.
-    void DestroySegments()
+    // This method is to store the necessary variables inside the player prefs.
+    void SetPlayerPrefs()
     {
-        for (int i = 1; i < segments.Count; i++)
-        {
-            Destroy(segments[i].transform.gameObject);
-        }
+        PlayerPrefs.SetFloat("asteroidsDestroyed", asteroidsDestroyed);
+        PlayerPrefs.SetFloat("enemiesDestroyed", enemiesDestroyed);
+        PlayerPrefs.SetFloat("draoclineCollected", draoclineCollected);
     }
 
     // This method is to calculate the final score and the credits collected
@@ -335,25 +332,34 @@ public class Snake : MonoBehaviour
         PlayerPrefs.SetFloat("credits", credits);
     }
 
-    // This method is to store the necessary variables inside the player prefs.
-    void SetPlayerPrefs()
+    // This method is to destroy the segments.
+    void DestroySegments()
     {
-        PlayerPrefs.SetFloat("asteroidsDestroyed", asteroidsDestroyed);
-        PlayerPrefs.SetFloat("enemiesDestroyed", enemiesDestroyed);
-        PlayerPrefs.SetFloat("draoclineCollected", draoclineCollected);
+        for (int i = 1; i < segments.Count; i++)
+        {
+            Destroy(segments[i].transform.gameObject);
+        }
     }
 
+    // This method is to play the given audio clip.
     private void PlayAudioClip(AudioClip clip)
     {
         if (clip != null)
         {
-            // Assign the specified audio clip to the AudioSource
-            audioHandler.clip = clip;
-
-            // Play the audio clip
-            audioHandler.Play();
+            audioSource.clip = clip;
+            audioSource.Play();
         }
     }
 
+    // This method is to show the game over menu on game over.
+    public void LoadGameOverMenu()
+    {
+        gameOverMenu.SetActive(true);
+        typeText.CallTypeText();
+    }
+
     #endregion
+
+    #endregion
+
 }
