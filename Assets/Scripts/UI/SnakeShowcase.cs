@@ -11,11 +11,10 @@ public class SnakeShowcase : MonoBehaviour
     // ////////////////////////////////////////
     #region FIELDS
 
-    SpriteRenderer spriteRenderer;
     MainMenuHandler menuHandler;
     [SerializeField] TMP_Text priceText;
-    int snakeIndex = 0;
     [SerializeField] Transform snakeMenu;
+    int snakeIndex = 0;
     int snakeKey = 0;
 
     // Price, shield, and speed
@@ -42,7 +41,6 @@ public class SnakeShowcase : MonoBehaviour
     void Start()
     {
         menuHandler = FindObjectOfType<MainMenuHandler>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     #endregion
