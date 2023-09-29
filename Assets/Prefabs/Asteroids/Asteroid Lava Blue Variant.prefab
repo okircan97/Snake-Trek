@@ -7,6 +7,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 367571844, guid: f603e71ddc270d54192200e95673e2a6, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1056666096333670, guid: f603e71ddc270d54192200e95673e2a6, type: 3}
       propertyPath: m_Name
       value: Asteroid Lava Blue Variant
@@ -59,7 +63,8 @@ PrefabInstance:
       propertyPath: m_Constraints
       value: 8
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 367571844, guid: f603e71ddc270d54192200e95673e2a6, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: f603e71ddc270d54192200e95673e2a6, type: 3}
 --- !u!1 &5145533138440620248 stripped
 GameObject:
@@ -79,4 +84,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosion: {fileID: 7465219574998201383, guid: b55a15ec4bf6eee4abefd433267c90c1, type: 3}
+  audioSource: {fileID: 0}
   explodeClip: {fileID: 8300000, guid: e46733bdc2578a642b87bc74965202f9, type: 3}
