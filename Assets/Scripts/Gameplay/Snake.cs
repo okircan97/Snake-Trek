@@ -13,12 +13,13 @@ public class Snake : MonoBehaviour
     // ////////////////////////////////////////
     #region  FIELDS
 
-    // Fields for the snake
+    // Fields for the snake.
     [SerializeField] float forceMagnitude;
     public float maxVelocity;
     Vector3 movementDirection;
     public float shield;
     [SerializeField] TMP_Text shieldText;
+    bool isStarted;     // A bool to check if the game is started.
 
     // Fields for the snake segments.
     List<Transform> segments;
@@ -46,12 +47,6 @@ public class Snake : MonoBehaviour
     Animator animator;
     TypeText typeText;
     AsteroidSpawner asteroidSpawner;
-
-
-
-    [SerializeField] GameObject explosion;
-    [SerializeField] GameObject gameOverMenu;
-
     CameraShake cameraShake;
 
     // Audio stuff.
@@ -59,9 +54,14 @@ public class Snake : MonoBehaviour
     public AudioClip asteroidExpClip;
     AudioSource audioSource;
 
+    // Animation
+    [SerializeField] GameObject explosion;
 
+    // UI
+    [SerializeField] GameObject gameOverMenu;
 
     #endregion
+
 
     // ////////////////////////////////////////
     // //////////// MONO-BEHAVIORS ////////////
@@ -93,17 +93,21 @@ public class Snake : MonoBehaviour
     void Update()
     {
         // Handle the movement inputs.
-        ProcessInput();
-        KeepPlayerOnScreen();
-        RotateToFaceVelocity();
+        if (isStarted)
+        {
+            ProcessInput();
+            KeepPlayerOnScreen();
+            RotateToFaceVelocity();
+        }
 
         // Wait for the animator to play the ship animation on beginning. When
-        // it's done, enable asteroidSpawner so that it could spawn asteroids.
+        // it's done, enable asteroidSpawner and turn the isStarted flag to true.
         if (animator.enabled == true)
             if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
             {
                 animator.enabled = false;
                 asteroidSpawner.gameObject.SetActive(true);
+                isStarted = true;
             }
     }
 
