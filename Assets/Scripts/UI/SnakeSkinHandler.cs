@@ -27,18 +27,6 @@ public class SnakeSkinHandler : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    // This method is to handle the shop menu texts, if
-    // the current scene is scene 0.
-    public void HandleShop(int i)
-    {
-        if (SceneManager.GetActiveScene().buildIndex == 0)
-        {
-            GameObject.FindWithTag("PriceText").GetComponent<TMP_Text>().text = "Price: " + snakeProperties[i, 0].ToString();
-            GameObject.FindWithTag("ShieldText").GetComponent<TMP_Text>().text = "Shield: " + snakeProperties[i, 1].ToString();
-            GameObject.FindWithTag("SpeedText").GetComponent<TMP_Text>().text = "Speed: " + snakeProperties[i, 2].ToString();
-        }
-    }
-
     // This method is to change the snake model according
     // to the snake key inside the player prefs. It'll also
     // change the isTrigger property of its colliders to true.
@@ -52,9 +40,6 @@ public class SnakeSkinHandler : MonoBehaviour
             {
                 // Activate the ship model.
                 transform.GetChild(i).gameObject.SetActive(true);
-
-                // Handle the shop texts (for main menu only).
-                HandleShop(i);
 
                 // Update the Snake's properties accordingly.
                 if (transform.GetComponent<Snake>())
