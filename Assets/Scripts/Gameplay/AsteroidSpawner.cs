@@ -22,8 +22,9 @@ public class AsteroidSpawner : MonoBehaviour
 
     public float increaseInterval = 1.0f; // Time interval for increasing fields
     public int fieldToIncrease = 0;       // Index of the field to increase
-    public float increaseAmount = 1.0f;   // Amount to increase the field by
+    public float decreaseAmount = 0.01f;   // Amount to increase the field by
     private float timer = 0.0f;
+    float secondsBetweenIncreaseDiff = 1f;
 
     #endregion
 
@@ -42,6 +43,7 @@ public class AsteroidSpawner : MonoBehaviour
     {
         CallSpawnAsteroids();
         CallSpawnEnemies();
+        CallIncreaseDifficulty();
     }
 
     #endregion
@@ -186,4 +188,29 @@ public class AsteroidSpawner : MonoBehaviour
     #endregion
 
     #endregion
+
+    void CallIncreaseDifficulty()
+    {
+        // Update the timer
+        timer -= Time.deltaTime;
+
+        if (timer <= 0)
+        {
+            IncreaseDifficulty();
+            timer = secondsBetweenIncreaseDiff;
+        }
+    }
+
+    private void IncreaseDifficulty()
+    {
+        if (secondsBetweenAstreoids >= 1f)
+        {
+            secondsBetweenAstreoids -= decreaseAmount;
+        }
+
+        if (secondsBetweenEnemies >= 1f)
+        {
+            secondsBetweenEnemies -= decreaseAmount;
+        }
+    }
 }
