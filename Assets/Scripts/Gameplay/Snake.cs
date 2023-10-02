@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using TMPro;
 using System.Linq;
+using UnityEngine.EventSystems;
 
 public class Snake : MonoBehaviour
 {
@@ -142,19 +143,25 @@ public class Snake : MonoBehaviour
         }
 
         // If the "other" is asteroid take damage and destroy if no shield remains.
-        else if (!hasCrashThisFrame && asteroid)
+        else if (other.transform.parent != null)
         {
-            PlayAudioClip(asteroidExpClip);
-            cameraShake.ShakeCamera();
-            asteroid.Explode();
-            shield -= 10;
-            shieldText.text = "Shield: " + shield.ToString();
-            hasCrashThisFrame = true;
-            if (shield <= 0)
+            if (!hasCrashThisFrame && other.gameObject.transform.parent.GetComponent<Asteroid>())
             {
-                GameOver();
+                asteroid = other.gameObject.transform.parent.GetComponent<Asteroid>();
+                Debug.Log("ASTEROID");
+                PlayAudioClip(asteroidExpClip);
+                cameraShake.ShakeCamera();
+                asteroid.Explode();
+                shield -= 10;
+                shieldText.text = "Shield: " + shield.ToString();
+                hasCrashThisFrame = true;
+                if (shield <= 0)
+                {
+                    GameOver();
+                }
             }
         }
+
 
         // If the "other" is laser take damage and destroy if no shield remains.
         else if (!hasCrashThisFrame && laser)
