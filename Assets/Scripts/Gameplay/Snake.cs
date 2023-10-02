@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using TMPro;
 using System.Linq;
+using UnityEngine.EventSystems;
 
 public class Snake : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class Snake : MonoBehaviour
     Vector3 movementDirection;
     public float shield;
     [SerializeField] TMP_Text shieldText;
-    bool isStarted;     // A bool to check if the game is started.
+    public bool isStarted;     // A bool to check if the game is started.
 
     // Fields for the snake segments.
     List<Transform> segments;
@@ -142,19 +143,25 @@ public class Snake : MonoBehaviour
         }
 
         // If the "other" is asteroid take damage and destroy if no shield remains.
-        else if (!hasCrashThisFrame && asteroid)
+        else if (other.transform.parent != null)
         {
-            PlayAudioClip(asteroidExpClip);
-            cameraShake.ShakeCamera();
-            asteroid.Explode();
-            shield -= 10;
-            shieldText.text = "Shield: " + shield.ToString();
-            hasCrashThisFrame = true;
-            if (shield <= 0)
+            if (!hasCrashThisFrame && other.gameObject.transform.parent.GetComponent<Asteroid>())
             {
-                GameOver();
+                asteroid = other.gameObject.transform.parent.GetComponent<Asteroid>();
+                Debug.Log("ASTEROID");
+                PlayAudioClip(asteroidExpClip);
+                cameraShake.ShakeCamera();
+                asteroid.Explode();
+                shield -= 10;
+                shieldText.text = "Shield: " + shield.ToString();
+                hasCrashThisFrame = true;
+                if (shield <= 0)
+                {
+                    GameOver();
+                }
             }
         }
+
 
         // If the "other" is laser take damage and destroy if no shield remains.
         else if (!hasCrashThisFrame && laser)
@@ -283,7 +290,7 @@ public class Snake : MonoBehaviour
     // This method is to grow the snake as it's eating.
     public void Grow()
     {
-        Transform segment = Instantiate(segmentPrefab);
+        Transform segment = Instantiate(segmentPrefab, segments[segments.Count - 1].position, Quaternion.identity);
         if (!isGrowBefore)
         {
             segment.tag = "Untagged";

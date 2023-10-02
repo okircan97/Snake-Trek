@@ -10,6 +10,8 @@ public class PauseMenuHandler : MonoBehaviour
     #region FIELDS
     SceneHandler sceneHandler;
     [SerializeField] GameObject pauseMenu;
+    Snake snake;
+
     #endregion
 
 
@@ -21,6 +23,7 @@ public class PauseMenuHandler : MonoBehaviour
     {
         Time.timeScale = 1;
         sceneHandler = FindObjectOfType<SceneHandler>();
+        snake = FindObjectOfType<Snake>();
     }
     #endregion
 
@@ -49,10 +52,12 @@ public class PauseMenuHandler : MonoBehaviour
         if (!pauseMenu.activeSelf)
         {
             Time.timeScale = 1;
+            snake.isStarted = true;
         }
         else
         {
             Time.timeScale = 0;
+            snake.isStarted = false;
         }
     }
     #endregion

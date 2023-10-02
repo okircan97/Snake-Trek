@@ -109,20 +109,23 @@ public class Enemy : MonoBehaviour
         }
 
         // If the "other" is asteroid take damage and destroy if no shield remains.
-        if (!hasCrashThisFrame && other.gameObject.GetComponent<Asteroid>())
+        if (other.transform.parent != null)
         {
-            other.gameObject.GetComponent<Asteroid>().Explode();
-            shield -= 10;
-            hasCrashThisFrame = true;
-            if (shield <= 0)
+            if (!hasCrashThisFrame && other.gameObject.transform.parent.GetComponent<Asteroid>())
             {
-                PlayExplosion();
-                PlayAudioClip(explodeClip);
-                DestroySegments();
-                Destroy(gameObject, 0.5f);
+                other.gameObject.transform.parent.GetComponent<Asteroid>().Explode();
+                shield -= 10;
+                hasCrashThisFrame = true;
+                if (shield <= 0)
+                {
+                    PlayExplosion();
+                    PlayAudioClip(explodeClip);
+                    DestroySegments();
+                    Destroy(gameObject, 0.5f);
+                }
             }
-
         }
+
 
         // If the other is "segment" or "Snake" game over.
         if (other.transform.gameObject.tag == "Segment" || other.gameObject.GetComponent<Snake>())
