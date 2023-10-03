@@ -142,27 +142,6 @@ public class Snake : MonoBehaviour
             hasGrownThisFrame = true;
         }
 
-        // If the "other" is asteroid take damage and destroy if no shield remains.
-        else if (other.transform.parent != null)
-        {
-            if (!hasCrashThisFrame && other.gameObject.transform.parent.GetComponent<Asteroid>())
-            {
-                asteroid = other.gameObject.transform.parent.GetComponent<Asteroid>();
-                Debug.Log("ASTEROID");
-                PlayAudioClip(asteroidExpClip);
-                cameraShake.ShakeCamera();
-                asteroid.Explode();
-                shield -= 10;
-                shieldText.text = "Shield: " + shield.ToString();
-                hasCrashThisFrame = true;
-                if (shield <= 0)
-                {
-                    GameOver();
-                }
-            }
-        }
-
-
         // If the "other" is laser take damage and destroy if no shield remains.
         else if (!hasCrashThisFrame && laser)
         {
@@ -183,6 +162,26 @@ public class Snake : MonoBehaviour
             cameraShake.ShakeCamera();
             PlayAudioClip(explodeClip);
             GameOver();
+        }
+
+        // If the "other" is asteroid take damage and destroy if no shield remains.
+        else if (other.transform.parent != null)
+        {
+            if (!hasCrashThisFrame && other.gameObject.transform.parent.GetComponent<Asteroid>())
+            {
+                asteroid = other.gameObject.transform.parent.GetComponent<Asteroid>();
+                Debug.Log("ASTEROID");
+                PlayAudioClip(asteroidExpClip);
+                cameraShake.ShakeCamera();
+                asteroid.Explode();
+                shield -= 10;
+                shieldText.text = "Shield: " + shield.ToString();
+                hasCrashThisFrame = true;
+                if (shield <= 0)
+                {
+                    GameOver();
+                }
+            }
         }
     }
 
