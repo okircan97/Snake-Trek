@@ -126,9 +126,8 @@ public class Enemy : MonoBehaviour
             }
         }
 
-
         // If the other is "segment" or "Snake" game over.
-        if (other.transform.gameObject.tag == "Segment" || other.gameObject.GetComponent<Snake>())
+        if (other.transform.gameObject.tag == "Segment" || other.gameObject.GetComponent<Snake>() || other.gameObject.GetComponent<Enemy>())
         {
             PlayAudioClip(explodeClip);
             PlayExplosion();
