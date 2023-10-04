@@ -11,6 +11,9 @@ public class Food : MonoBehaviour
 
     public BoxCollider gridArea;
     Vector3 rotationVector;
+    public AudioSource audioSource;
+    public Animator animator;
+    bool foodAnimPlaying;
 
     #endregion FIELDS
 
@@ -18,6 +21,12 @@ public class Food : MonoBehaviour
     // //////////// MONO-BEHAVIORS ////////////
     // ////////////////////////////////////////
     #region  MONOBEHAVIORS
+
+    void Awake()
+    {
+        animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
+    }
 
     void Start()
     {
@@ -39,6 +48,8 @@ public class Food : MonoBehaviour
     // This method is to get a random coordinate between the given bounds.
     public void RandomizePosition()
     {
+        transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
+        transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
         Bounds bounds = gridArea.bounds;
         float randX = Mathf.Round(Random.Range(bounds.min.x, bounds.max.x));
         float randY = Mathf.Round(Random.Range(bounds.min.y, bounds.max.y));
@@ -46,6 +57,8 @@ public class Food : MonoBehaviour
         transform.position = new Vector3(randX, randY, -10);
         transform.rotation = Quaternion.Euler(0, 0, 0);
         rotationVector = GetRandVector3();
+
+        StartCoroutine(PlayFoodAnimBackwards());
     }
 
     // This method is to return a random Vector3.
@@ -68,6 +81,18 @@ public class Food : MonoBehaviour
             default:
                 return Vector3.up;
         }
+    }
+
+    // Play the foor animation.
+    IEnumerator PlayFoodAnimBackwards()
+    {
+        foodAnimPlaying = true;
+        animator.SetTrigger("isSpawn");
+        transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
+        yield return new WaitForSeconds(1f);
+
+        animator.ResetTrigger("isSpawn");
+        foodAnimPlaying = false;
     }
 
     #endregion

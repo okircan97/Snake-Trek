@@ -57,6 +57,7 @@ public class Snake : MonoBehaviour
 
     // Animation
     [SerializeField] GameObject explosion;
+    bool foodAnimPlaying = false;
 
     // UI
     [SerializeField] GameObject gameOverMenu;
@@ -134,17 +135,16 @@ public class Snake : MonoBehaviour
         Enemy enemy = other.gameObject.GetComponent<Enemy>();
 
         // If the "other" is food, grow.
-        if (!hasGrownThisFrame && food)
+        if (!hasGrownThisFrame && food && !foodAnimPlaying)
         {
-            food.RandomizePosition();
-            draoclineCollected++;
-            Grow();
-            hasGrownThisFrame = true;
+            Animator foodAnimator = food.gameObject.GetComponent<Animator>();
+            StartCoroutine(PlayFoodAnim(foodAnimator, food));
         }
 
         // If the "other" is laser take damage and destroy if no shield remains.
         else if (!hasCrashThisFrame && laser)
         {
+            Debug.Log("laser");
             cameraShake.ShakeCamera();
             shield -= 10;
             Destroy(laser.gameObject);
@@ -159,6 +159,10 @@ public class Snake : MonoBehaviour
         // If the other is "segment" or an "enemy", game over.
         else if (other.transform.gameObject.tag == "Segment" || enemy)
         {
+            if (enemy)
+                Debug.Log("enemy");
+            else
+                Debug.Log("segment");
             cameraShake.ShakeCamera();
             PlayAudioClip(explodeClip);
             GameOver();
@@ -292,7 +296,7 @@ public class Snake : MonoBehaviour
         Transform segment = Instantiate(segmentPrefab, segments[segments.Count - 1].position, Quaternion.identity);
         if (!isGrowBefore)
         {
-            segment.tag = "Segment";
+            segment.tag = "Untagged";
             isGrowBefore = true;
         }
 
@@ -300,6 +304,23 @@ public class Snake : MonoBehaviour
         segments.Add(segment);
     }
 
+    // Play the foor animation.
+    IEnumerator PlayFoodAnim(Animator foodAnimator, Food food)
+    {
+        food.audioSource.Play();
+        food.transform.position = new Vector3(food.transform.position.x, food.transform.position.y, -5);
+        foodAnimPlaying = true;
+        foodAnimator.SetTrigger("Trigger");
+        yield return new WaitForSeconds(1f);
+
+        food.RandomizePosition();
+        draoclineCollected++;
+        Grow();
+        hasGrownThisFrame = true;
+        foodAnimator.ResetTrigger("Trigger");
+
+        foodAnimPlaying = false;
+    }
     #region  GAMEOVER METHODS
 
     // When the player is crashed, deactivate the snake, destroy the segments and 
