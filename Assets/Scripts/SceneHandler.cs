@@ -7,6 +7,7 @@ public class SceneHandler : MonoBehaviour
 {
     SceneHandler instance;
 
+
     void Start()
     {
         // Set up the singleton.
@@ -42,6 +43,14 @@ public class SceneHandler : MonoBehaviour
     // This method is to load the game.
     public void LoadGame()
     {
+        SceneManager.LoadScene(1);
+    }
+
+    // This method is to load the game.
+    public void LoadGameWithAnim()
+    {
+        // TO DO: Play the transition animation by changing its parameter.
+        // Do it just like you did with the snake.
         SceneManager.LoadScene(1);
     }
 }

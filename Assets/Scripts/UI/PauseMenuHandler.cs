@@ -11,6 +11,8 @@ public class PauseMenuHandler : MonoBehaviour
     SceneHandler sceneHandler;
     [SerializeField] GameObject pauseMenu;
     Snake snake;
+    [SerializeField] GameObject transitionMenu;
+    Animator transitionAnim;
 
     #endregion
 
@@ -24,6 +26,17 @@ public class PauseMenuHandler : MonoBehaviour
         Time.timeScale = 1;
         sceneHandler = FindObjectOfType<SceneHandler>();
         snake = FindObjectOfType<Snake>();
+        transitionAnim = transitionMenu.GetComponent<Animator>();
+    }
+
+    void Update()
+    {
+        if (transitionAnim.enabled == true)
+            if (transitionAnim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+            {
+                transitionMenu.SetActive(false);
+                snake.animator.enabled = true;
+            }
     }
     #endregion
 
@@ -60,5 +73,7 @@ public class PauseMenuHandler : MonoBehaviour
             snake.isStarted = false;
         }
     }
+
+    // T
     #endregion
 }

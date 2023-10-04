@@ -30,6 +30,9 @@ public class MainMenuHandler : MonoBehaviour
     string nebulaKey = "Nebula";
     string snakeKey = "Snake";
 
+    // Animation
+    public GameObject transitionPanel;
+
     #endregion
 
 
@@ -244,6 +247,21 @@ public class MainMenuHandler : MonoBehaviour
         {
             creditTexts[i].GetComponent<TMP_Text>().text = PlayerPrefs.GetFloat("credits", 0).ToString();
         }
+    }
+
+    // This method is to load the game after playing the transition animation.
+    IEnumerator PlayAnimAndLoadScene()
+    {
+        transitionPanel.SetActive(true);
+        transitionPanel.GetComponent<Animator>().SetTrigger("sceneLoading");
+        yield return new WaitForSeconds(1f);
+        SceneManager.LoadScene(1);
+    }
+
+    // A method to call PlayAnimAndLoadScene onclick.
+    public void CallPlayAnimAndLoadScene()
+    {
+        StartCoroutine(PlayAnimAndLoadScene());
     }
 
     #endregion
