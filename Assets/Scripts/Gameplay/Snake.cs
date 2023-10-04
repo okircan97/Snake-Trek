@@ -45,7 +45,7 @@ public class Snake : MonoBehaviour
     Rigidbody rb;
     SceneHandler sceneHandler;
     PauseMenuHandler pauseMenuHandler;
-    Animator animator;
+    public Animator animator;
     TypeText typeText;
     AsteroidSpawner asteroidSpawner;
     CameraShake cameraShake;
@@ -90,6 +90,8 @@ public class Snake : MonoBehaviour
 
         // Handle the text fields.
         shieldText.text = "Shield: " + shield.ToString();
+
+        animator.enabled = false;
     }
 
     void Update()
@@ -296,15 +298,19 @@ public class Snake : MonoBehaviour
     // This method is to grow the snake as it's eating.
     public void Grow()
     {
-        Transform segment = Instantiate(segmentPrefab, segments[segments.Count - 1].position, Quaternion.identity);
-        if (!isGrowBefore)
+        if (segments.Count != 0)
         {
-            segment.tag = "Untagged";
-            isGrowBefore = true;
+            Transform segment = Instantiate(segmentPrefab, segments[segments.Count - 1].position, Quaternion.identity);
+            if (!isGrowBefore)
+            {
+                segment.tag = "Untagged";
+                isGrowBefore = true;
+            }
+
+            segment.SetParent(playerSegments.transform);
+            segments.Add(segment);
         }
 
-        segment.SetParent(playerSegments.transform);
-        segments.Add(segment);
     }
 
     // Play the foor animation.

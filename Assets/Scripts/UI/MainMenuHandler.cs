@@ -30,6 +30,12 @@ public class MainMenuHandler : MonoBehaviour
     string nebulaKey = "Nebula";
     string snakeKey = "Snake";
 
+    // Animation
+    public GameObject transitionPanel;
+
+    // Audio
+    AudioSource audioSource;
+
     #endregion
 
 
@@ -48,6 +54,7 @@ public class MainMenuHandler : MonoBehaviour
         nebulaShowcase = FindObjectOfType<NebulaShowcase>();
         snakeShowcase = FindObjectOfType<SnakeShowcase>();
         mainCamera = Camera.main;
+        audioSource = GetComponent<AudioSource>();
 
         // Nebula and snake sprites.
         nebulas = Resources.LoadAll<Sprite>("Nebulas");
@@ -244,6 +251,22 @@ public class MainMenuHandler : MonoBehaviour
         {
             creditTexts[i].GetComponent<TMP_Text>().text = PlayerPrefs.GetFloat("credits", 0).ToString();
         }
+    }
+
+    // This method is to load the game after playing the transition animation.
+    IEnumerator PlayAnimAndLoadScene()
+    {
+        audioSource.Play();
+        transitionPanel.SetActive(true);
+        transitionPanel.GetComponent<Animator>().SetTrigger("sceneLoading");
+        yield return new WaitForSeconds(1f);
+        SceneManager.LoadScene(1);
+    }
+
+    // A method to call PlayAnimAndLoadScene onclick.
+    public void CallPlayAnimAndLoadScene()
+    {
+        StartCoroutine(PlayAnimAndLoadScene());
     }
 
     #endregion
