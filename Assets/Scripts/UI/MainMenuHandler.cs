@@ -33,6 +33,9 @@ public class MainMenuHandler : MonoBehaviour
     // Animation
     public GameObject transitionPanel;
 
+    // Audio
+    AudioSource audioSource;
+
     #endregion
 
 
@@ -51,6 +54,7 @@ public class MainMenuHandler : MonoBehaviour
         nebulaShowcase = FindObjectOfType<NebulaShowcase>();
         snakeShowcase = FindObjectOfType<SnakeShowcase>();
         mainCamera = Camera.main;
+        audioSource = GetComponent<AudioSource>();
 
         // Nebula and snake sprites.
         nebulas = Resources.LoadAll<Sprite>("Nebulas");
@@ -252,6 +256,7 @@ public class MainMenuHandler : MonoBehaviour
     // This method is to load the game after playing the transition animation.
     IEnumerator PlayAnimAndLoadScene()
     {
+        audioSource.Play();
         transitionPanel.SetActive(true);
         transitionPanel.GetComponent<Animator>().SetTrigger("sceneLoading");
         yield return new WaitForSeconds(1f);
