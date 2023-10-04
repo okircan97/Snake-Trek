@@ -234,13 +234,15 @@ public class Snake : MonoBehaviour
 
         // Move the segments.
         int index = 0;
-        foreach (var segment in segments)
+        if (segments.Count() != 0)
         {
-            Vector3 point = positionHistory[Mathf.Min(index * gap, positionHistory.Count - 1)];
-            segment.transform.position = point;
-            index++;
+            foreach (var segment in segments)
+            {
+                Vector3 point = positionHistory[Mathf.Min(index * gap, positionHistory.Count - 1)];
+                segment.transform.position = point;
+                index++;
+            }
         }
-
     }
 
     // This method is to keep the player on screen.
@@ -290,6 +292,7 @@ public class Snake : MonoBehaviour
 
     # endregion
 
+    #region  SEGMENT AND FOOD METHODS
     // This method is to grow the snake as it's eating.
     public void Grow()
     {
@@ -321,17 +324,23 @@ public class Snake : MonoBehaviour
 
         foodAnimPlaying = false;
     }
+
+    #endregion
+
     #region  GAMEOVER METHODS
 
     // When the player is crashed, deactivate the snake, destroy the segments and 
     // play the explosion effect.
     public void GameOver()
     {
+        int snakeKey = PlayerPrefs.GetInt("Snake", 0);
+
         SetPlayerPrefs();
         CalculateScoreAndCredits();
         DestroySegments();
         PlayAudioClip(explodeClip);
-        gameObject.SetActive(false);
+        // gameObject.SetActive(false);
+        gameObject.transform.GetChild(snakeKey).transform.gameObject.SetActive(false);
 
         // Play the explosion effect (Explosion obj. has three particle effects as children)
         explosion = Instantiate(explosion, transform.position, Quaternion.identity);
@@ -340,7 +349,7 @@ public class Snake : MonoBehaviour
             explosion.transform.GetChild(i).GetComponent<ParticleSystem>().Play();
         }
 
-        Invoke("LoadGameOverMenu", 2f);
+        StartCoroutine(LoadGameOverMenu());
     }
 
     // This method is to store the necessary variables inside the player prefs.
@@ -370,6 +379,8 @@ public class Snake : MonoBehaviour
         {
             Destroy(segments[i].transform.gameObject);
         }
+
+        segments.Clear();
     }
 
     // This method is to play the given audio clip.
@@ -383,9 +394,13 @@ public class Snake : MonoBehaviour
     }
 
     // This method is to show the game over menu on game over.
-    public void LoadGameOverMenu()
+    IEnumerator LoadGameOverMenu()
     {
         gameOverMenu.SetActive(true);
+        // TO DO: Play menu animation
+        gameOverMenu.GetComponent<Animator>().SetTrigger("gameOver");
+        yield return new WaitForSeconds(1f);
+
         typeText.CallTypeText();
     }
 
