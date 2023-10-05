@@ -57,6 +57,7 @@ public class Asteroid : MonoBehaviour
             if (other.transform.parent.tag == "PlayerSegments")
             {
                 snake.asteroidsDestroyed++;
+                snake.score += 10;
             }
         }
 
