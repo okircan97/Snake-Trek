@@ -1,85 +1,64 @@
 using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 
 public class LeaderboardHandler : MonoBehaviour
 {
-    [SerializeField] TMP_Text first;
-    // [SerializeField] TMP_Text second;
-    // [SerializeField] TMP_Text third;
-    // [SerializeField] TMP_Text fourth;
-    // [SerializeField] TMP_Text fifth;
+    [SerializeField] TMP_Text firstPlaceText;
+    [SerializeField] TMP_Text secondPlaceText;
+    [SerializeField] TMP_Text thirdPlaceText;
+    [SerializeField] TMP_Text fourthPlaceText;
+    [SerializeField] TMP_Text fifthPlaceText;
 
-    // Start is called before the first frame update
     void Start()
     {
-        float currentScore = PlayerPrefs.GetFloat("currentScore", 0);
-        float score = PlayerPrefs.GetFloat("score", 0);
+        UpdateLeaderboard();
+    }
 
-        if (score > currentScore)
+    // This method is to update the leaderboard using the 
+    void UpdateLeaderboard()
+    {
+        float currentScore = PlayerPrefs.GetFloat("score", 0);
+        float[] scores = GetScores(currentScore);
+
+        firstPlaceText.text = scores[0].ToString();
+        secondPlaceText.text = scores[1].ToString();
+        thirdPlaceText.text = scores[2].ToString();
+        fourthPlaceText.text = scores[3].ToString();
+        fifthPlaceText.text = scores[4].ToString();
+
+        PlayerPrefs.SetFloat("score", 0);
+    }
+
+    // This method is to get the scores from the player prefs in
+    // descending order.
+    float[] GetScores(float newScore)
+    {
+        float[] scores = new float[5];
+
+        // Load existing scores
+        for (int i = 0; i < 5; i++)
         {
-            PlayerPrefs.SetFloat("currentScore", score);
+            // scores[i] = PlayerPrefs.GetFloat("score" + (i + 1), float.MaxValue);
+            scores[i] = PlayerPrefs.GetFloat("score" + (i + 1), 0);
         }
 
-        first.text = PlayerPrefs.GetFloat("currentScore", 0).ToString();
-
-        // float[] scores = GetScores();
-        // first.text = scores[0].ToString();
-        // second.text = scores[1].ToString();
-        // third.text = scores[2].ToString();
-        // fourth.text = scores[3].ToString();
-        // fifth.text = scores[4].ToString();   
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    // This method is to get the player prefs for the score.
-    float[] GetScores()
-    {
-        // The score from the previous game.
-        float score = PlayerPrefs.GetFloat("score", 0);
-
-        // A list representing the 5 best score.
-        float[] scores = { 0, 0, 0, 0, 0 };
-
-        for (int i = 1; i < 6; i++)
+        // Check if the new score belongs in the leaderboard
+        for (int i = 0; i < 5; i++)
         {
-            // If current score is bigger than any, put it to the 5th score
-            // player pref.
-            if (PlayerPrefs.GetFloat("score" + i.ToString(), 0) < score)
+            if (newScore > scores[i])
             {
-                Debug.Log("element" + i + "is " + scores[i]);
-                Debug.Log("score is :" + score);
-                Debug.Log("element" + i + "is the smaller one");
-                PlayerPrefs.SetFloat("score5", score);
+                // Insert the new score into the leaderboard
+                Array.Copy(scores, i, scores, i + 1, 4 - i);
+                scores[i] = newScore;
                 break;
             }
         }
 
-        // Create a new list with the updated player prefs.
-        scores[0] = PlayerPrefs.GetFloat("score1", 0);
-        scores[1] = PlayerPrefs.GetFloat("score2", 0);
-        scores[2] = PlayerPrefs.GetFloat("score3", 0);
-        scores[3] = PlayerPrefs.GetFloat("score4", 0);
-        scores[4] = PlayerPrefs.GetFloat("score5", 0);
-
-        // Sort the scores.
-        Array.Sort(scores);
-        Array.Reverse(scores);
-
-        // Put them back into the player prefs.
-        for (int i = 0; i < scores.Length; i++)
+        // Save updated scores to PlayerPrefs
+        for (int i = 0; i < 5; i++)
         {
-            Debug.Log("scores[" + i + "]: " + scores[i]);
-            PlayerPrefs.SetFloat("score" + i.ToString(), scores[i]);
+            PlayerPrefs.SetFloat("score" + (i + 1), scores[i]);
         }
 
         return scores;
