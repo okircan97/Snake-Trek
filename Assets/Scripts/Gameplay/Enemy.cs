@@ -138,7 +138,12 @@ public class Enemy : MonoBehaviour
         // If the other is a player segment, increase the snake.enemiesDestroyed.
         if (other.transform.parent != null)
             if (other.transform.parent.tag == "PlayerSegments")
+            {
                 snake.enemiesDestroyed++;
+                snake.score += 20;
+            }
+
+
     }
 
     #endregion

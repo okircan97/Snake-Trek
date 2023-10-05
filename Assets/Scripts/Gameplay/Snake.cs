@@ -20,6 +20,7 @@ public class Snake : MonoBehaviour
     Vector3 movementDirection;
     public float shield;
     [SerializeField] TMP_Text shieldText;
+    public TMP_Text scoreText;
     public bool isStarted;     // A bool to check if the game is started.
 
     // Fields for the snake segments.
@@ -31,14 +32,14 @@ public class Snake : MonoBehaviour
 
     // Fields for segment movement.
     List<Vector3> positionHistory = new List<Vector3>();    // A list to hold the transform pos. history.
-    public int gap = 5;                                     // For 
+    int gap = 5;                                     // For 
     bool isGrowBefore = false;                              // A bool to get the first segment.
 
     // Fields for calculating the score.
     public int asteroidsDestroyed;
     public int enemiesDestroyed;
     public int draoclineCollected;
-    public float score;
+    public float score = 0;
 
     // References.
     Camera mainCamera;
@@ -90,6 +91,7 @@ public class Snake : MonoBehaviour
 
         // Handle the text fields.
         shieldText.text = "Shield: " + shield.ToString();
+        scoreText.text = "Score: " + score.ToString();
 
         animator.enabled = false;
     }
@@ -110,12 +112,17 @@ public class Snake : MonoBehaviour
         // Wait for the animator to play the ship animation on beginning. When
         // it's done, enable asteroidSpawner and turn the isStarted flag to true.
         if (animator.enabled == true)
+        {
             if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
             {
                 animator.enabled = false;
                 asteroidSpawner.gameObject.SetActive(true);
                 isStarted = true;
             }
+        }
+
+        scoreText.text = "Score: " + score.ToString();
+
     }
 
     void FixedUpdate()
@@ -164,10 +171,6 @@ public class Snake : MonoBehaviour
         // If the other is "segment" or an "enemy", game over.
         else if (other.transform.gameObject.tag == "Segment" || enemy)
         {
-            if (enemy)
-                Debug.Log("enemy");
-            else
-                Debug.Log("segment");
             cameraShake.ShakeCamera();
             PlayAudioClip(explodeClip);
             GameOver();
@@ -179,7 +182,6 @@ public class Snake : MonoBehaviour
             if (!hasCrashThisFrame && other.gameObject.transform.parent.GetComponent<Asteroid>())
             {
                 asteroid = other.gameObject.transform.parent.GetComponent<Asteroid>();
-                Debug.Log("ASTEROID");
                 PlayAudioClip(asteroidExpClip);
                 cameraShake.ShakeCamera();
                 asteroid.Explode();
@@ -226,7 +228,6 @@ public class Snake : MonoBehaviour
     // This method is to apply force to the player, according to the movement dir.
     void ApplyForce()
     {
-
         // Move the head.
         if (movementDirection != Vector3.zero)
         {
@@ -327,6 +328,8 @@ public class Snake : MonoBehaviour
 
         food.RandomizePosition();
         draoclineCollected++;
+        score += 10;
+
         Grow();
         hasGrownThisFrame = true;
         foodAnimator.ResetTrigger("Trigger");
