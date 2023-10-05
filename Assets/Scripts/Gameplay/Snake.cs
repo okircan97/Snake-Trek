@@ -99,9 +99,12 @@ public class Snake : MonoBehaviour
         // Handle the movement inputs.
         if (isStarted)
         {
-            ProcessInput();
-            KeepPlayerOnScreen();
+            if (Input.touchCount > 0 && !EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
+            {
+                ProcessInput();
+            }
             RotateToFaceVelocity();
+            KeepPlayerOnScreen();
         }
 
         // Wait for the animator to play the ship animation on beginning. When
@@ -204,7 +207,7 @@ public class Snake : MonoBehaviour
     // This method is to process the input.
     void ProcessInput()
     {
-        // If the screen is touched:
+        // // If the screen is touched:
         if (Touchscreen.current.primaryTouch.press.isPressed)
         {
             // Get the touch pos and convert it to world pos.
