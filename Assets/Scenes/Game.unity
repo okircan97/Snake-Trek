@@ -801,11 +801,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 331336605}
   m_CullTransparentMesh: 1
---- !u!82 &368268780 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 6665783333325763662, guid: 959a4cf2037d66e4cb50eba720be3589, type: 3}
-  m_PrefabInstance: {fileID: 6665783333003895202}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &439475369
 GameObject:
   m_ObjectHideFlags: 0
@@ -8607,11 +8602,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6665783333325763657, guid: 959a4cf2037d66e4cb50eba720be3589, type: 3}
       propertyPath: m_Name
-      value: AudioHandler
-      objectReference: {fileID: 0}
-    - target: {fileID: 6665783333325763657, guid: 959a4cf2037d66e4cb50eba720be3589, type: 3}
-      propertyPath: m_TagString
-      value: AudioHandler
+      value: AudioManager
       objectReference: {fileID: 0}
     - target: {fileID: 6665783333325763663, guid: 959a4cf2037d66e4cb50eba720be3589, type: 3}
       propertyPath: m_RootOrder
@@ -8747,6 +8738,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7201019404026788531, guid: e17e964f5460ad146b4d06d433c5fe23, type: 3}
+      propertyPath: foodClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 20f37b29081c17748859987ce76c348b, type: 3}
+    - target: {fileID: 7201019404026788531, guid: e17e964f5460ad146b4d06d433c5fe23, type: 3}
       propertyPath: explosion
       value: 
       objectReference: {fileID: 7465219574998201383, guid: d15dbb2dbbbe33747a5d99ce57d2039e, type: 3}
@@ -8765,7 +8760,7 @@ PrefabInstance:
     - target: {fileID: 7201019404026788531, guid: e17e964f5460ad146b4d06d433c5fe23, type: 3}
       propertyPath: audioHandler
       value: 
-      objectReference: {fileID: 368268780}
+      objectReference: {fileID: 0}
     - target: {fileID: 7201019404026788531, guid: e17e964f5460ad146b4d06d433c5fe23, type: 3}
       propertyPath: gameOverMenu
       value: 

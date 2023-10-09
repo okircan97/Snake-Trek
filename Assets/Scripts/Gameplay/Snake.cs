@@ -54,7 +54,9 @@ public class Snake : MonoBehaviour
     // Audio stuff.
     public AudioClip explodeClip;
     public AudioClip asteroidExpClip;
-    AudioSource audioSource;
+    public AudioClip foodClip;
+    // AudioSource audioSource;
+    AudioManager audioManager;
 
     // Animation
     [SerializeField] GameObject explosion;
@@ -83,7 +85,8 @@ public class Snake : MonoBehaviour
         playerSegments = GameObject.FindWithTag("PlayerSegments");
         typeText = FindObjectOfType<TypeText>();
         cameraShake = FindObjectOfType<CameraShake>();
-        audioSource = GameObject.FindWithTag("AudioHandler").transform.GetComponent<AudioSource>();
+        // audioSource = GameObject.FindWithTag("AudioHandler").transform.GetComponent<AudioSource>();
+        audioManager = FindObjectOfType<AudioManager>();
 
         // Add the head as the first segment.
         segments = new List<Transform>();
@@ -172,7 +175,6 @@ public class Snake : MonoBehaviour
         else if (other.transform.gameObject.tag == "Segment" || enemy)
         {
             cameraShake.ShakeCamera();
-            PlayAudioClip(explodeClip);
             GameOver();
         }
 
@@ -182,7 +184,9 @@ public class Snake : MonoBehaviour
             if (!hasCrashThisFrame && other.gameObject.transform.parent.GetComponent<Asteroid>())
             {
                 asteroid = other.gameObject.transform.parent.GetComponent<Asteroid>();
-                PlayAudioClip(asteroidExpClip);
+
+                AudioManager.Instance.PlayClip(asteroidExpClip);
+                // PlayAudioClip(asteroidExpClip);
                 cameraShake.ShakeCamera();
                 asteroid.Explode();
                 shield -= 10;
@@ -320,7 +324,8 @@ public class Snake : MonoBehaviour
     // Play the foor animation.
     IEnumerator PlayFoodAnim(Animator foodAnimator, Food food)
     {
-        food.audioSource.Play();
+
+        AudioManager.Instance.PlayClip(foodClip);
         food.transform.position = new Vector3(food.transform.position.x, food.transform.position.y, -5);
         foodAnimPlaying = true;
         foodAnimator.SetTrigger("Trigger");
@@ -350,8 +355,8 @@ public class Snake : MonoBehaviour
         SetPlayerPrefs();
         CalculateScoreAndCredits();
         DestroySegments();
-        PlayAudioClip(explodeClip);
-        // gameObject.SetActive(false);
+
+        AudioManager.Instance.PlayClip(explodeClip);
         gameObject.transform.GetChild(snakeKey).transform.gameObject.SetActive(false);
 
         // Play the explosion effect (Explosion obj. has three particle effects as children)
@@ -393,16 +398,6 @@ public class Snake : MonoBehaviour
         }
 
         segments.Clear();
-    }
-
-    // This method is to play the given audio clip.
-    private void PlayAudioClip(AudioClip clip)
-    {
-        if (clip != null)
-        {
-            audioSource.clip = clip;
-            audioSource.Play();
-        }
     }
 
     // This method is to show the game over menu on game over.

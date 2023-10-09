@@ -11,7 +11,6 @@ public class Food : MonoBehaviour
 
     public BoxCollider gridArea;
     Vector3 rotationVector;
-    public AudioSource audioSource;
     public Animator animator;
     bool foodAnimPlaying;
 
@@ -25,7 +24,6 @@ public class Food : MonoBehaviour
     void Awake()
     {
         animator = GetComponent<Animator>();
-        audioSource = GetComponent<AudioSource>();
     }
 
     void Start()

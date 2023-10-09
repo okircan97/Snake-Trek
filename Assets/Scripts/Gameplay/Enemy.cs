@@ -34,7 +34,7 @@ public class Enemy : MonoBehaviour
     // References
     Camera mainCamera;
     Snake snake;
-    AudioSource audioSource;
+    AudioManager audioManager;
     public AudioClip explodeClip;
     public AudioClip laserClip;
     public AudioClip asteroidExpClip;
@@ -64,10 +64,7 @@ public class Enemy : MonoBehaviour
             shield = smallShield;
         }
 
-        audioSource = gameObject.AddComponent<AudioSource>();
-        audioSource.clip = explodeClip;
-
-        audioHandler = GameObject.FindWithTag("AudioHandler").GetComponent<AudioSource>();
+        audioManager = FindObjectOfType<AudioManager>();
     }
 
     void Update()
@@ -119,7 +116,8 @@ public class Enemy : MonoBehaviour
                 if (shield <= 0)
                 {
                     PlayExplosion();
-                    PlayAudioClip(explodeClip);
+                    AudioManager.Instance.PlayClip(explodeClip);
+                    // PlayAudioClip(explodeClip);
                     DestroySegments();
                     Destroy(gameObject, 0.5f);
                 }
@@ -225,13 +223,8 @@ public class Enemy : MonoBehaviour
         // Give velocity to the laser
         laserRB.velocity = rb.velocity.normalized * 8f;
 
-        PlayAudioClip(laserClip);
-
-        // laserInstance.transform.rotation = Quaternion.LookRotation(rb.velocity, Vector3.back);
-
-        // // ******************************************
-        // rb.velocity = direction.normalized * Random.Range(forceRange.x, forceRange.y);
-        // laserInstance.transform.LookAt(laserInstance.transform.position + laserRB.velocity.normalized);
+        AudioManager.Instance.PlayClip(laserClip);
+        // PlayAudioClip(laserClip);
     }
 
     void CallFire()
