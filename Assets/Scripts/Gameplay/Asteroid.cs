@@ -13,8 +13,9 @@ public class Asteroid : MonoBehaviour
     Camera mainCamera;
     [SerializeField] GameObject explosion;
     Snake snake;
-    public AudioSource audioSource;
+    // public AudioSource audioSource;
     public AudioClip explodeClip;
+    AudioManager audioManager;
 
     #endregion
 
@@ -28,10 +29,7 @@ public class Asteroid : MonoBehaviour
     {
         mainCamera = Camera.main;
         snake = FindObjectOfType<Snake>();
-
-        audioSource = gameObject.AddComponent<AudioSource>();
-        audioSource.volume = 0.2f;
-        audioSource.clip = explodeClip;
+        audioManager = FindObjectOfType<AudioManager>();
     }
 
     void Update()
@@ -61,7 +59,7 @@ public class Asteroid : MonoBehaviour
             }
         }
 
-        audioSource.Play();
+        AudioManager.Instance.PlayClip(explodeClip);
         transform.GetComponent<MeshRenderer>().enabled = false;
         transform.GetChild(0).transform.gameObject.SetActive(false);
         Destroy(gameObject, 1);
