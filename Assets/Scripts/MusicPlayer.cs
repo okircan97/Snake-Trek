@@ -18,7 +18,7 @@ public class MusicPlayer : MonoBehaviour
     //////////// METHODS /////////////
     //////////////////////////////////
 
-    // This method is to set up the signleton design.
+    // This method is to set up the singleton design.
     private void SetUpSingleton()
     {
         if (FindObjectsOfType(GetType()).Length > 1)
