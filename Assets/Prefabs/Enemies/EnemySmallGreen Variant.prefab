@@ -207,7 +207,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1314043251266546, guid: a30ef2e5b0c4a2f4f894c4ff7f998e13, type: 3}
       propertyPath: m_TagString
-      value: EnemyS
+      value: Enemy4
       objectReference: {fileID: 0}
     - target: {fileID: 4167938680749096, guid: a30ef2e5b0c4a2f4f894c4ff7f998e13, type: 3}
       propertyPath: m_RootOrder
@@ -331,6 +331,8 @@ MonoBehaviour:
   gun: {fileID: 5182020220438287066}
   explodeClip: {fileID: 8300000, guid: bcd7c7bfb61f9c6428f2eb258ceddd92, type: 3}
   laserClip: {fileID: 8300000, guid: 11d4b989dd04a7c4bbcdc146ef79707a, type: 3}
+  asteroidExpClip: {fileID: 0}
+  audioHandler: {fileID: 0}
 --- !u!4 &7001909419395984014 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4167938680749096, guid: a30ef2e5b0c4a2f4f894c4ff7f998e13, type: 3}

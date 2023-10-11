@@ -22,9 +22,6 @@ public class Enemy : MonoBehaviour
     int smallShield = 10;
     Rigidbody rb;
 
-    // VFX
-    [SerializeField] GameObject explosion;
-
     // Laser fields.
     [SerializeField] float secondsBetweenAstreoids;
     float fireTimer;
@@ -70,7 +67,7 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         // If the enemy is tagged "EnemyS", turn it around its Z-axis.
-        if (tag == "EnemyS")
+        if (tag == "Enemy4" || tag == "Enemy5" || tag == "Enemy6")
         {
             transform.Rotate(Vector3.forward * 60 * Time.deltaTime);
         }
@@ -78,8 +75,8 @@ public class Enemy : MonoBehaviour
         // Make the enemies fire.
         CallFire();
 
-        // Destroy the enemies when they're out of the viewport.
-        DestroyAsteroidsOutOfViewport();
+        // Deactivate the enemies when they're out of the viewport.
+        DeactivateEnemiesOutOfViewport();
     }
 
     void FixedUpdate()
@@ -110,16 +107,15 @@ public class Enemy : MonoBehaviour
         {
             if (!hasCrashThisFrame && other.gameObject.transform.parent.GetComponent<Asteroid>())
             {
-                other.gameObject.transform.parent.GetComponent<Asteroid>().Explode();
+                Asteroid asteroid = other.gameObject.transform.parent.GetComponent<Asteroid>();
+                asteroid.Explode();
                 shield -= 10;
                 hasCrashThisFrame = true;
                 if (shield <= 0)
                 {
                     PlayExplosion();
                     AudioManager.Instance.PlayClip(explodeClip);
-                    // PlayAudioClip(explodeClip);
-                    DestroySegments();
-                    Destroy(gameObject, 0.5f);
+                    ResetEnemyState();
                 }
             }
         }
@@ -127,10 +123,9 @@ public class Enemy : MonoBehaviour
         // If the other is "segment" or "Snake" game over.
         if (other.transform.gameObject.tag == "Segment" || other.gameObject.GetComponent<Snake>() || other.gameObject.GetComponent<Enemy>())
         {
-            PlayAudioClip(explodeClip);
+            AudioManager.Instance.PlayClip(explodeClip);
             PlayExplosion();
-            DestroySegments();
-            Destroy(gameObject);
+            ResetEnemyState();
         }
 
         // If the other is a player segment, increase the snake.enemiesDestroyed.
@@ -140,8 +135,6 @@ public class Enemy : MonoBehaviour
                 snake.enemiesDestroyed++;
                 snake.score += 20;
             }
-
-
     }
 
     #endregion
@@ -151,17 +144,34 @@ public class Enemy : MonoBehaviour
     // ////////////////////////////////////////
     #region  METHODS
 
-    // This method is to destroy the asteroids when they're
-    // outside of the viewport.
-    void DestroyAsteroidsOutOfViewport()
+    // This method is to deactivate enemies out of the viewport.
+    void DeactivateEnemiesOutOfViewport()
     {
         Vector3 viewportPosition = mainCamera.WorldToViewportPoint(transform.position);
 
         if (viewportPosition.x > 1.1f || viewportPosition.x < -0.1f || viewportPosition.y > 1.1f || viewportPosition.y < -0.1f)
         {
-            DestroySegments();
-            Destroy(gameObject);
+            ResetEnemyState();
         }
+    }
+
+    // New method to reset the enemy and its state
+    void ResetEnemyState()
+    {
+        ClearSegments();
+        gameObject.SetActive(false);
+    }
+
+    // This method is to destroy the segments.
+    void ClearSegments()
+    {
+        for (int i = 1; i < segments.Count; i++)
+        {
+            // Consider pooling segments if they're frequently created and destroyed
+            Destroy(segments[i].transform.gameObject);
+        }
+        segments.Clear();
+        segments.Add(tracker.transform);
     }
 
 
@@ -188,23 +198,15 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    // This method is to play the explosion effect.
     void PlayExplosion()
     {
-        explosion = Instantiate(explosion, transform.position, Quaternion.identity);
-        for (int i = 0; i < explosion.transform.childCount; i++)
-        {
-            explosion.transform.GetChild(i).GetComponent<ParticleSystem>().Play();
-        }
-        Destroy(gameObject);
-    }
+        // Fetch an explosion object from the object pool
+        GameObject pooledExplosion = ObjectPooler.Instance.SpawnFromPool("ShipExplosion", transform.position, Quaternion.identity);
 
-    // This method is to destroy the segments.
-    void DestroySegments()
-    {
-        for (int i = 1; i < segments.Count; i++)
+        // Activate the explosion
+        if (pooledExplosion != null)
         {
-            Destroy(segments[i].transform.gameObject);
+            pooledExplosion.SetActive(true);
         }
     }
 
@@ -214,17 +216,20 @@ public class Enemy : MonoBehaviour
         // Get a random laser.
         GameObject laser = laserPrefabs[Random.Range(0, laserPrefabs.Length)];
 
-        // Instantiate the laser.
-        GameObject laserInstance = Instantiate(laser,
-                                                gun.transform.position,
-                                                Quaternion.identity);
-        Rigidbody laserRB = laserInstance.GetComponent<Rigidbody>();
+        // Fetch a laser object from the object pool
+        GameObject pooledLaser = ObjectPooler.Instance.SpawnFromPool(laser.tag, gun.transform.position, Quaternion.identity);
 
-        // Give velocity to the laser
-        laserRB.velocity = rb.velocity.normalized * 8f;
+        if (pooledLaser != null)
+        {
+            // Activate the laser and assign its Rigidbody
+            pooledLaser.SetActive(true);
+            Rigidbody laserRB = pooledLaser.GetComponent<Rigidbody>();
 
-        AudioManager.Instance.PlayClip(laserClip);
-        // PlayAudioClip(laserClip);
+            // Give velocity to the laser
+            laserRB.velocity = rb.velocity.normalized * 8f;
+
+            AudioManager.Instance.PlayClip(laserClip);
+        }
     }
 
     void CallFire()
@@ -236,18 +241,7 @@ public class Enemy : MonoBehaviour
             fireTimer = secondsBetweenAstreoids;
         }
     }
-
-    private void PlayAudioClip(AudioClip clip)
-    {
-        if (clip != null)
-        {
-            // Assign the specified audio clip to the AudioSource
-            audioHandler.clip = clip;
-
-            // Play the audio clip
-            audioHandler.Play();
-        }
-    }
-
     #endregion
+
+
 }

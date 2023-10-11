@@ -4,36 +4,40 @@ using UnityEngine;
 
 public class ParticleDestroyer : MonoBehaviour
 {
+    private ParticleSystem[] particleSystems;
+
+    void OnEnable()
+    {
+        // Ensure we have the latest particle systems
+        particleSystems = GetComponentsInChildren<ParticleSystem>();
+
+        foreach (var ps in particleSystems)
+        {
+            ps.Stop();   // Stop it first to ensure it's reset
+            ps.Clear();  // Clear the current particles
+            ps.Play();   // Start the particle system
+        }
+    }
 
     void Update()
     {
-        DestroyObject();
-    }
+        bool allFinished = true;
 
-    // This method is to destroy the game obj. if there's no
-    // active childs attached to it.
-    void DestroyObject()
-    {
-        // A bool to check if there're any enabled children.
-        bool isChildEnabled = false;
-
-        // If the game object has no child, destroy it.
-        if (transform.childCount == 0)
-            Destroy(gameObject);
-
-        else
+        foreach (var ps in particleSystems)
         {
-            // Check if there's any enabled child.
-            for (int i = 0; i < transform.childCount; i++)
+            // Debug.Log($"Particle system {ps.name} isAlive: {ps.IsAlive()}");
+            if (ps != null && ps.IsAlive())
             {
-                if (transform.GetChild(i).transform.gameObject.activeSelf)
-                    isChildEnabled = true;
+                allFinished = false;
+                break;
             }
         }
 
-        // If there's no enabled child, destroy the game object.
-        if (!isChildEnabled)
-            Destroy(gameObject);
-
+        // Deactivate the game object when all particle systems have finished
+        if (allFinished)
+        {
+            ObjectPooler.Instance.ReturnToPool(gameObject);  // New method to return to pool.
+        }
     }
 }
+

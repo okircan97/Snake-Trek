@@ -8083,6 +8083,96 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1730807244
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1730807246}
+  - component: {fileID: 1730807245}
+  m_Layer: 0
+  m_Name: ObjectPooler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1730807245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1730807244}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6763985e815749340a2aaf11982b5be3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pools:
+  - tag: Enemy1
+    prefab: {fileID: 3030553260879711136, guid: cab5bffbe37adfc478525fab22a9f68e, type: 3}
+    size: 5
+  - tag: Enemy2
+    prefab: {fileID: 2035915311416471453, guid: 0eaeee16538be34418566433214ab712, type: 3}
+    size: 5
+  - tag: Enemy3
+    prefab: {fileID: 7727049395731574213, guid: 8ea8b630ad317294cad128972f639087, type: 3}
+    size: 5
+  - tag: Enemy4
+    prefab: {fileID: 6999053617537467732, guid: 8779fdfe58bbd4d4cb54e01e7d1159f6, type: 3}
+    size: 5
+  - tag: Enemy5
+    prefab: {fileID: 5160621511232322508, guid: 91a7aed6741af694598d118514d84367, type: 3}
+    size: 5
+  - tag: Enemy6
+    prefab: {fileID: 2644815038569551823, guid: 6044e67eb41d1774dbc1f698c8033031, type: 3}
+    size: 5
+  - tag: Asteroid1
+    prefab: {fileID: 5145533138440620248, guid: 8f462c83e1953ac469ff6783b888caaa, type: 3}
+    size: 5
+  - tag: Asteroid2
+    prefab: {fileID: 1184131670639000269, guid: f942307131ddda146b8a309da1dc37db, type: 3}
+    size: 5
+  - tag: Laser1
+    prefab: {fileID: 4332193746452299435, guid: d557a01812682b94faf5e8dd3c081256, type: 3}
+    size: 5
+  - tag: Laser2
+    prefab: {fileID: 4302221197098069927, guid: 4868e2dce642be54a948c8563853b3d4, type: 3}
+    size: 5
+  - tag: Laser3
+    prefab: {fileID: 2577819497931426085, guid: bdcaaf7578a08ef4ca0484163ac54c1c, type: 3}
+    size: 5
+  - tag: Laser4
+    prefab: {fileID: 3325380829952058418, guid: be6ed382769d97f4d9dc89d62949293c, type: 3}
+    size: 5
+  - tag: Laser5
+    prefab: {fileID: 6066102430361329781, guid: 5d39b188699983b4e8dbe966a8e2e9f9, type: 3}
+    size: 5
+  - tag: Explosion
+    prefab: {fileID: 7465219574998201383, guid: b55a15ec4bf6eee4abefd433267c90c1, type: 3}
+    size: 5
+  - tag: ShipExplosion
+    prefab: {fileID: 7465219574998201383, guid: d15dbb2dbbbe33747a5d99ce57d2039e, type: 3}
+    size: 5
+--- !u!4 &1730807246
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1730807244}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 41.280163, y: -6.6185703, z: 8.014572}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 13
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1877119369
 GameObject:
   m_ObjectHideFlags: 0
