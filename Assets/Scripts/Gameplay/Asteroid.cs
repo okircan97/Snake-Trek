@@ -11,9 +11,7 @@ public class Asteroid : MonoBehaviour
     #region FIELDS
 
     Camera mainCamera;
-    [SerializeField] GameObject explosion;
     Snake snake;
-    // public AudioSource audioSource;
     public AudioClip explodeClip;
     AudioManager audioManager;
 
@@ -36,13 +34,13 @@ public class Asteroid : MonoBehaviour
     {
         // Rotate the asteroids.
         transform.Rotate(Vector3.up * (Random.Range(5, 30) * Time.deltaTime));
-        DestroyAsteroidsOutOfViewport();
+        DeactivateAsteroidsOutOfViewport();
     }
 
     private void OnCollisionEnter(Collision other)
     {
-        explosion = Instantiate(explosion, transform.position, Quaternion.identity);
-        explosion.transform.GetChild(0).GetComponent<ParticleSystem>().Play();
+        // explosion = Instantiate(explosion, transform.position, Quaternion.identity);
+        // explosion.transform.GetChild(0).GetComponent<ParticleSystem>().Play();
 
         if (other.transform.GetComponent<Food>())
         {
@@ -60,9 +58,9 @@ public class Asteroid : MonoBehaviour
         }
 
         AudioManager.Instance.PlayClip(explodeClip);
-        transform.GetComponent<MeshRenderer>().enabled = false;
-        transform.GetChild(0).transform.gameObject.SetActive(false);
-        Destroy(gameObject, 1);
+
+        Explode();
+        ResetAsteroidState();
     }
     #endregion
 
@@ -72,25 +70,41 @@ public class Asteroid : MonoBehaviour
     // ////////////////////////////////////////
     #region METHODS
 
-    // This method is to destroy the asteroids when they're
-    // outside of the viewport.
-    void DestroyAsteroidsOutOfViewport()
+    // Modified function name for clarity
+    void DeactivateAsteroidsOutOfViewport()
     {
         Vector3 viewportPosition = mainCamera.WorldToViewportPoint(transform.position);
 
         if (viewportPosition.x > 1.1f || viewportPosition.x < -0.1f || viewportPosition.y > 1.1f || viewportPosition.y < -0.1f)
         {
-            Destroy(gameObject);
+            ResetAsteroidState();
         }
+    }
+
+    // New method to reset the asteroid to its initial state
+    void ResetAsteroidState()
+    {
+        transform.GetComponent<MeshRenderer>().enabled = true;
+        if (transform.childCount > 0)
+            transform.GetChild(0).gameObject.SetActive(true);
+
+        gameObject.SetActive(false);
     }
 
     // This method is to play the explosion effect of the asteroids.
     public void Explode()
     {
-        explosion = Instantiate(explosion, transform.position, Quaternion.identity);
-        explosion.transform.GetChild(0).GetComponent<ParticleSystem>().Play();
-        // explosion.transform.SetParent(gameObject.transform);
-        gameObject.GetComponent<MeshRenderer>().gameObject.SetActive(false);
+
+        // Fetch an explosion object from the object pool
+        GameObject pooledExplosion = ObjectPooler.Instance.SpawnFromPool("Explosion", transform.position, Quaternion.identity);
+
+        // if (pooledExplosion)
+        // {
+        //     // Ensuring it's active in case it wasn't before
+        //     pooledExplosion.SetActive(true);
+        // }
+
+        ResetAsteroidState();
     }
     #endregion
 }

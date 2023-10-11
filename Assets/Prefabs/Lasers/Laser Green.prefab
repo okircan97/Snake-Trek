@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 6384505526735073486}
   m_Layer: 0
   m_Name: Laser Green
-  m_TagString: Laser
+  m_TagString: Laser2
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

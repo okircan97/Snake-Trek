@@ -162,7 +162,7 @@ public class Snake : MonoBehaviour
             Debug.Log("laser");
             cameraShake.ShakeCamera();
             shield -= 10;
-            Destroy(laser.gameObject);
+            laser.gameObject.SetActive(false);
             shieldText.text = "Shield: " + shield.ToString();
             hasCrashThisFrame = true;
             if (shield <= 0)
@@ -359,13 +359,11 @@ public class Snake : MonoBehaviour
         AudioManager.Instance.PlayClip(explodeClip);
         gameObject.transform.GetChild(snakeKey).transform.gameObject.SetActive(false);
 
-        // Play the explosion effect (Explosion obj. has three particle effects as children)
-        explosion = Instantiate(explosion, transform.position, Quaternion.identity);
-        for (int i = 0; i < explosion.transform.childCount; i++)
-        {
-            explosion.transform.GetChild(i).GetComponent<ParticleSystem>().Play();
-        }
+        // // Play the explosion effect (Explosion obj. has three particle effects as children)
+        // explosion = Instantiate(explosion, transform.position, Quaternion.identity);
 
+        // Using object pooling to get the explosion effect
+        GameObject explosionEffect = ObjectPooler.Instance.SpawnFromPool("ShipExplosion", transform.position, Quaternion.identity);
         StartCoroutine(LoadGameOverMenu());
     }
 

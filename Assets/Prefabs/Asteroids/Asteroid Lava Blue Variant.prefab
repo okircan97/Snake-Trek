@@ -15,6 +15,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Asteroid Lava Blue Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 1056666096333670, guid: f603e71ddc270d54192200e95673e2a6, type: 3}
+      propertyPath: m_TagString
+      value: Asteroid1
+      objectReference: {fileID: 0}
     - target: {fileID: 4579553980399578, guid: f603e71ddc270d54192200e95673e2a6, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -84,5 +88,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosion: {fileID: 7465219574998201383, guid: b55a15ec4bf6eee4abefd433267c90c1, type: 3}
-  audioSource: {fileID: 0}
   explodeClip: {fileID: 8300000, guid: e46733bdc2578a642b87bc74965202f9, type: 3}

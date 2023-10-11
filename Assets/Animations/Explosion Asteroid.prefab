@@ -11,6 +11,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Explosion Asteroid
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 15ca5b8fa431dc04291a79cadcd19874, type: 3}
+      propertyPath: m_TagString
+      value: Explosion
+      objectReference: {fileID: 0}
     - target: {fileID: 100002, guid: 15ca5b8fa431dc04291a79cadcd19874, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -113,11 +117,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 19800000, guid: 15ca5b8fa431dc04291a79cadcd19874, type: 3}
       propertyPath: stopAction
-      value: 2
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 15ca5b8fa431dc04291a79cadcd19874, type: 3}
+      propertyPath: playOnAwake
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 19800002, guid: 15ca5b8fa431dc04291a79cadcd19874, type: 3}
       propertyPath: stopAction
-      value: 2
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 19800002, guid: 15ca5b8fa431dc04291a79cadcd19874, type: 3}
+      propertyPath: playOnAwake
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 19800002, guid: 15ca5b8fa431dc04291a79cadcd19874, type: 3}
       propertyPath: InitialModule.startSizeY.minMaxState
@@ -137,7 +149,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 19800004, guid: 15ca5b8fa431dc04291a79cadcd19874, type: 3}
       propertyPath: stopAction
-      value: 2
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 19800004, guid: 15ca5b8fa431dc04291a79cadcd19874, type: 3}
+      propertyPath: playOnAwake
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 19800004, guid: 15ca5b8fa431dc04291a79cadcd19874, type: 3}
       propertyPath: InitialModule.startSize.scalar

@@ -20,8 +20,8 @@ public class AsteroidSpawner : MonoBehaviour
     [SerializeField] Vector2 forceRange;
     Camera mainCamera;
 
-    public float increaseInterval = 1.0f; // Time interval for increasing fields
-    public int fieldToIncrease = 0;       // Index of the field to increase
+    public float increaseInterval = 1.0f;  // Time interval for increasing fields
+    public int fieldToIncrease = 0;        // Index of the field to increase
     public float decreaseAmount = 0.01f;   // Amount to increase the field by
     private float timer = 0.0f;
     float secondsBetweenIncreaseDiff = 1f;
@@ -108,13 +108,9 @@ public class AsteroidSpawner : MonoBehaviour
         // Spawn a random asteroid.
         Vector3 worldSpawnPoint = mainCamera.ViewportToWorldPoint(spawnPoint);
         worldSpawnPoint.z = -10;
+
         GameObject asteroid = asteroidPrefabs[Random.Range(0, asteroidPrefabs.Length)];
-        // TO DO
-        // Check if the object is a ship. If so, change its rotation
-        // to head where it's heading.
-        GameObject asteroidInstance = Instantiate(asteroid,
-                                                worldSpawnPoint,
-                                                Quaternion.Euler(0f, 0f, Random.Range(10, 150)));
+        GameObject asteroidInstance = ObjectPooler.Instance.SpawnFromPool(asteroid.tag, worldSpawnPoint, Quaternion.Euler(0f, 0f, Random.Range(10, 150)));
         Rigidbody rb = asteroidInstance.GetComponent<Rigidbody>();
         rb.velocity = direction.normalized * Random.Range(forceRange.x, forceRange.y);
     }
@@ -175,19 +171,15 @@ public class AsteroidSpawner : MonoBehaviour
         // Spawn a random enemy.
         Vector3 worldSpawnPoint = mainCamera.ViewportToWorldPoint(spawnPoint);
         worldSpawnPoint.z = -10;
+
         GameObject enemy = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
-        GameObject enemyInstance = Instantiate(enemy,
-                                                worldSpawnPoint,
-                                                Quaternion.Euler(0f, 90f, Random.Range(70, 110)));
+        GameObject enemyInstance = ObjectPooler.Instance.SpawnFromPool(enemy.tag, worldSpawnPoint, Quaternion.Euler(0f, 90f, Random.Range(70, 110)));
 
         // Add velocity to the enemyship and rotate it towards the velocity.
         Rigidbody rb = enemyInstance.GetComponent<Rigidbody>();
         rb.velocity = direction.normalized * Random.Range(forceRange.x, forceRange.y);
         enemyInstance.transform.rotation = Quaternion.LookRotation(rb.velocity, Vector3.forward);
     }
-    #endregion
-
-    #endregion
 
     void CallIncreaseDifficulty()
     {
@@ -213,4 +205,10 @@ public class AsteroidSpawner : MonoBehaviour
             secondsBetweenEnemies -= decreaseAmount;
         }
     }
+
+    #endregion
+
+    #endregion
+
+
 }

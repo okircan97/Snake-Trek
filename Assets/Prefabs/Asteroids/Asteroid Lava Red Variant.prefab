@@ -15,6 +15,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1822345149752838, guid: 45b62242ff99b0a48a47f713cd6d1687, type: 3}
+      propertyPath: m_TagString
+      value: Asteroid2
+      objectReference: {fileID: 0}
     - target: {fileID: 4992838361154946, guid: 45b62242ff99b0a48a47f713cd6d1687, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -107,5 +111,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosion: {fileID: 7465219574998201383, guid: b55a15ec4bf6eee4abefd433267c90c1, type: 3}
-  audioSource: {fileID: 0}
   explodeClip: {fileID: 8300000, guid: e46733bdc2578a642b87bc74965202f9, type: 3}
