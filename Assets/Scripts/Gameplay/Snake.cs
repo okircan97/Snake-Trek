@@ -65,6 +65,9 @@ public class Snake : MonoBehaviour
     // UI
     [SerializeField] GameObject gameOverMenu;
 
+    // Joystick
+    public SimpleJoystick joystick;
+
     #endregion
 
 
@@ -104,10 +107,11 @@ public class Snake : MonoBehaviour
         // Handle the movement inputs.
         if (isStarted)
         {
-            if (Input.touchCount > 0 && !EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
-            {
-                ProcessInput();
-            }
+            // if (Input.touchCount > 0 && !EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
+            // {
+            //     ProcessInput();
+            // }
+            ProcessJoystickInput();
             RotateToFaceVelocity();
             KeepPlayerOnScreen();
         }
@@ -228,6 +232,16 @@ public class Snake : MonoBehaviour
             movementDirection.Normalize();
         }
     }
+
+    void ProcessJoystickInput()
+    {
+        float horizontal = joystick.Horizontal();
+        float vertical = joystick.Vertical();
+
+        // Convert joystick input to movement direction.
+        movementDirection = new Vector3(horizontal, vertical, 0f).normalized;
+    }
+
 
     // This method is to apply force to the player, according to the movement dir.
     void ApplyForce()
