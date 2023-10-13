@@ -97,6 +97,7 @@ public class Asteroid : MonoBehaviour
 
         // Fetch an explosion object from the object pool
         GameObject pooledExplosion = ObjectPooler.Instance.SpawnFromPool("Explosion", transform.position, Quaternion.identity);
+        AudioManager.Instance.PlayClip(explodeClip);
 
         // if (pooledExplosion)
         // {
