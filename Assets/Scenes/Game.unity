@@ -8244,6 +8244,8 @@ MonoBehaviour:
   increaseInterval: 1
   fieldToIncrease: 0
   decreaseAmount: 0.01
+  warningPrefab: {fileID: 7817151321675074568, guid: 98cfa60453adb4f4bb876a0275164c68, type: 3}
+  warningDuration: 0.5
 --- !u!4 &1696804865
 Transform:
   m_ObjectHideFlags: 0
@@ -8334,6 +8336,9 @@ MonoBehaviour:
   - tag: ShipExplosion
     prefab: {fileID: 7465219574998201383, guid: d15dbb2dbbbe33747a5d99ce57d2039e, type: 3}
     size: 5
+  - tag: Warning
+    prefab: {fileID: 7817151321675074568, guid: 98cfa60453adb4f4bb876a0275164c68, type: 3}
+    size: 10
 --- !u!4 &1730807246
 Transform:
   m_ObjectHideFlags: 0
