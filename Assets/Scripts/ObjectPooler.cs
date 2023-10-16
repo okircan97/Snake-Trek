@@ -41,13 +41,13 @@ public class ObjectPooler : MonoBehaviour
     {
         if (!poolDictionary.ContainsKey(tag))
         {
-            Debug.LogWarning("Pool with tag " + tag + " doesn't exist.");
+            // Debug.LogWarning("Pool with tag " + tag + " doesn't exist.");
             return null;
         }
 
         GameObject objectToSpawn = poolDictionary[tag].Dequeue();
 
-        Debug.Log("Spawning object with tag: " + tag + ". Total objects of this type in the scene: " + (poolDictionary[tag].Count + 1));
+        // Debug.Log("Spawning object with tag: " + tag + ". Total objects of this type in the scene: " + (poolDictionary[tag].Count + 1));
 
         objectToSpawn.SetActive(true);
         objectToSpawn.transform.position = position;
@@ -68,7 +68,7 @@ public class ObjectPooler : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Tag not found in pool dictionary: " + objTag);
+            // Debug.LogWarning("Tag not found in pool dictionary: " + objTag);
         }
     }
 }
