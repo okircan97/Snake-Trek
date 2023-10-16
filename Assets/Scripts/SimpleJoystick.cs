@@ -6,11 +6,42 @@ public class SimpleJoystick : MonoBehaviour, IDragHandler, IPointerUpHandler, IP
     private Vector2 inputVector = Vector2.zero;
     private RectTransform joystickBG;
     private RectTransform joystick;
+    private Camera mainCamera;
+    private Vector3 initialPosition; // store initial position of joystickBG
+    private bool isDragging = false;
+    private PointerEventData cachedEventData;
 
     private void Start()
     {
         joystickBG = GetComponent<RectTransform>();
         joystick = transform.GetChild(0).GetComponent<RectTransform>();
+        mainCamera = Camera.main;
+        initialPosition = joystickBG.position; // set the initial position
+    }
+
+    void Update()
+    {
+        if (isDragging && cachedEventData != null)
+        {
+            OnDrag(cachedEventData);
+        }
+
+        if (Input.touchCount == 0)
+        {
+            isDragging = false;
+            joystickBG.anchoredPosition = initialPosition;
+            joystick.anchoredPosition = Vector2.zero;
+            cachedEventData = null;
+        }
+    }
+
+    void LateUpdate()
+    {
+        if (!isDragging)
+        {
+            joystickBG.anchoredPosition = Vector3.Lerp(joystickBG.anchoredPosition, initialPosition, Time.deltaTime * 10f);
+            joystick.anchoredPosition = Vector3.Lerp(joystick.anchoredPosition, Vector2.zero, Time.deltaTime * 10f);
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -30,15 +61,23 @@ public class SimpleJoystick : MonoBehaviour, IDragHandler, IPointerUpHandler, IP
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        OnDrag(eventData);
-        // Optionally, to vibrate phone once when the joystick is used:
-        Handheld.Vibrate();
+        isDragging = true;
+        cachedEventData = eventData;
+        Vector2 touchPosition = mainCamera.ScreenToWorldPoint(eventData.position);
+        joystickBG.position = touchPosition; // Set joystick background to touch position
+        Debug.Log("you've touched the screen: " + touchPosition);
+
+        OnDrag(eventData); // We still call OnDrag to update the joystick handle's position.
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        Debug.Log("OnPointerUp called!");
+        isDragging = false;
+        cachedEventData = null;
         inputVector = Vector2.zero;
         joystick.anchoredPosition = Vector2.zero;
+        joystickBG.position = initialPosition; // return the joystickBG to the initial position
     }
 
     public float Horizontal()
@@ -49,5 +88,11 @@ public class SimpleJoystick : MonoBehaviour, IDragHandler, IPointerUpHandler, IP
     public float Vertical()
     {
         return inputVector.y;
+    }
+
+    public void HandlePointerDown(PointerEventData eventData)
+    {
+        OnPointerDown(eventData);
+        OnDrag(eventData); // Immediately start dragging
     }
 }
