@@ -12,10 +12,10 @@ public class SnakeSkinHandler : MonoBehaviour
     SpriteRenderer spriteRenderer;
 
     // Price, shield, and speed
-    float[,] snakeProperties = {{0,30,5},{1000,30,5},{1000,30,5.1f},{1500,40,5.2f},{1500,40,5.3f},
-                             {2000,40,5.4f},{2000,40,5.4f},{2500,50,5.5f},{2500,50,5.5f},{3000,50,5.6f},
-                             {3000,50,5.6f},{3500,60,5.6f},{3500,60,5.7f},{4000,70,5.8f},{4000,70,5.9f},
-                             {4500,80,6f},{4500,90,6.1f},{4500,80,6.2f},{5000,90,6.3f},{5000,90,6.3f}};
+    float[,] snakeProperties = {{0,30,5},{3500,30,5},{3500,30,5.2f},{4500,40,5.4f},{4500,40,5.4f},
+                             {5000,40,5.4f},{5000,40,5.4f},{6000,50,5.5f},{6500,50,5.5f},{6500,50,5.6f},
+                             {6500,50,5.7f},{10000,60,5.8f},{10000,60,6f},{10000,70,6.2f},{10000,70,6.3f},
+                             {125000,80,6.5f},{14000,90,7f},{14000,80,7f},{20000,90,8f},{20000,90,8f}};
 
     void Awake()
     {
@@ -57,9 +57,20 @@ public class SnakeSkinHandler : MonoBehaviour
                     transform.GetChild(i).gameObject.transform.GetChild(0).transform.GetChild(j).GetComponent<BoxCollider>().isTrigger = true;
                 }
 
+                // Handle the shield and speed texts in the menu.
+                HandleShowTexts(i);
             }
             else
                 transform.GetChild(i).gameObject.SetActive(false);
+        }
+    }
+
+    public void HandleShowTexts(int i)
+    {
+        if (SceneManager.GetActiveScene().buildIndex == 0)
+        {
+            GameObject.FindWithTag("ShieldShowText").GetComponent<TMP_Text>().text = "Shield: " + snakeProperties[i, 1].ToString();
+            GameObject.FindWithTag("SpeedShowText").GetComponent<TMP_Text>().text = "Speed: " + snakeProperties[i, 2].ToString();
         }
     }
 }
