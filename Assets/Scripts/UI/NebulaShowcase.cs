@@ -56,7 +56,7 @@ public class NebulaShowcase : MonoBehaviour
                 transform.GetChild(i).gameObject.SetActive(true);
 
                 // Handle the price text.
-                priceText.text = "Price: 500";
+                priceText.text = "Price: 2000";
 
                 nebulaIndex = i;
             }
@@ -70,11 +70,11 @@ public class NebulaShowcase : MonoBehaviour
     public void BuyNebula()
     {
         // The player has enough credits to buy nebula.
-        if (PlayerPrefs.GetFloat("credits") >= 500)
+        if (PlayerPrefs.GetFloat("credits") >= 2000)
         {
             PlayerPrefs.SetInt("Nebula" + nebulaIndex.ToString(), 1);
             Debug.Log("Nebula index: " + "Nebula" + nebulaIndex.ToString());
-            PlayerPrefs.SetFloat("credits", PlayerPrefs.GetFloat("credits") - 500);
+            PlayerPrefs.SetFloat("credits", PlayerPrefs.GetFloat("credits") - 2000);
             menuHandler.UnlockNebulaButton(nebulaIndex);
             menuHandler.MoveCamera(nebulaMenu);
             menuHandler.HandleCreditTexts();
